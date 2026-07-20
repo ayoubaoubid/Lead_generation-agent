@@ -1,0 +1,29 @@
+{
+  "name": "lead-generation-sales",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@lead-generation/web",
+    "build": "npm run build --workspace=@lead-generation/web",
+    "start": "npm run start --workspace=@lead-generation/web",
+    "lint": "npm run lint --workspace=@lead-generation/web",
+    "lint:fix": "npm run lint:fix --workspace=@lead-generation/web",
+    "typecheck": "npm run typecheck --workspace=@lead-generation/web",
+    "test": "npm run test --workspace=@lead-generation/web",
+    "test:watch": "npm run test:watch --workspace=@lead-generation/web",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.9.5"
+  }
+}

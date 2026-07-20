@@ -1,0 +1,2473 @@
+# Cahier des charges — Plateforme intelligente de Lead Generation & Sales Automation
+
+> Correction de périmètre définitive : la plateforme est opérée par une agence et ne contient aucun paiement en ligne, abonnement SaaS, plan tarifaire, checkout, billing ou Stripe. Les contrats sont conclus hors plateforme et les espaces clients sont créés manuellement par un administrateur autorisé. Les crédits et quotas concernent uniquement les fournisseurs techniques.
+
+## 1. Présentation générale du projet
+
+### 1.1 Nom provisoire
+
+**AI Lead Generation & Sales Automation Platform**
+
+### 1.2 Vision
+
+Construire une plateforme capable d’automatiser une grande partie du travail réalisé par une agence de lead generation, une équipe SDR ou une équipe commerciale B2B.
+
+Le système devra permettre de :
+
+* définir une cible commerciale ;
+* rechercher des entreprises ;
+* identifier les décideurs ;
+* enrichir les données ;
+* vérifier la qualité des coordonnées ;
+* qualifier les prospects ;
+* créer des campagnes multicanales ;
+* personnaliser les messages avec l’IA ;
+* envoyer les campagnes ;
+* effectuer les relances ;
+* analyser les réponses ;
+* gérer les rendez-vous ;
+* suivre les opportunités commerciales ;
+* mesurer les performances ;
+* synchroniser les données avec un CRM.
+
+La plateforme ne doit pas être un simple outil d’envoi d’emails. Elle doit couvrir le processus commercial complet :
+
+```text
+Stratégie
+→ Recherche
+→ Enrichissement
+→ Qualification
+→ Prospection
+→ Conversation
+→ Rendez-vous
+→ Opportunité
+→ Vente
+→ Analyse
+→ Optimisation
+```
+
+---
+
+# 2. Objectifs du système
+
+## 2.1 Objectifs commerciaux
+
+La plateforme doit permettre de :
+
+* générer régulièrement des prospects qualifiés ;
+* réduire le temps consacré à la recherche manuelle ;
+* améliorer la qualité des bases de prospection ;
+* augmenter le taux de réponse ;
+* personnaliser les messages à grande échelle ;
+* centraliser le suivi commercial ;
+* réduire les oublis de relance ;
+* faciliter la prise de rendez-vous ;
+* mesurer précisément le retour sur investissement ;
+* rendre le processus commercial reproductible.
+
+## 2.2 Objectifs techniques
+
+Le système doit être :
+
+* modulaire ;
+* sécurisé ;
+* multiclient ;
+* maintenable ;
+* extensible ;
+* observable ;
+* testable ;
+* documenté ;
+* compatible avec plusieurs fournisseurs d’IA ;
+* compatible avec plusieurs outils d’envoi et CRM ;
+* capable d’exécuter des traitements asynchrones ;
+* capable de gérer les erreurs et les reprises ;
+* capable de conserver une piste d’audit.
+
+## 2.3 Utilisateurs cibles
+
+La plateforme pourra être utilisée par :
+
+* une agence de lead generation ;
+* une agence d’automatisation IA ;
+* un consultant indépendant ;
+* une équipe marketing ;
+* une équipe SDR ;
+* une équipe commerciale ;
+* un responsable des ventes ;
+* un administrateur technique ;
+* un client final de l’agence.
+
+---
+
+# 3. Périmètre fonctionnel global
+
+La plateforme sera organisée en quatorze domaines fonctionnels.
+
+```text
+1. Gestion des organisations et utilisateurs
+2. Configuration de l’offre commerciale
+3. Définition de l’ICP et des personas
+4. Recherche des entreprises
+5. Recherche des contacts
+6. Enrichissement et vérification
+7. Qualification et scoring
+8. Construction des campagnes
+9. Personnalisation par IA
+10. Envoi multicanal et relances
+11. Gestion des réponses
+12. Rendez-vous et pipeline commercial
+13. CRM, analytics et reporting
+14. Administration, conformité et sécurité
+```
+
+---
+
+# 4. Processus métier complet
+
+## 4.1 Phase 1 — Onboarding du client
+
+Avant toute campagne, le système doit recueillir les informations nécessaires sur le client.
+
+### Informations sur l’entreprise cliente
+
+* nom de l’entreprise ;
+* secteur d’activité ;
+* pays et marchés couverts ;
+* site web ;
+* description des services ;
+* taille de l’entreprise ;
+* identité visuelle ;
+* coordonnées commerciales ;
+* équipe commerciale ;
+* outils déjà utilisés ;
+* CRM existant ;
+* domaines et boîtes email disponibles.
+
+### Informations sur l’offre
+
+* nom de l’offre ;
+* description ;
+* bénéfices ;
+* fonctionnalités ;
+* prix ;
+* modalités de vente ;
+* durée de déploiement ;
+* garanties éventuelles ;
+* objections fréquentes ;
+* cas clients ;
+* témoignages ;
+* documents commerciaux ;
+* page de réservation ;
+* zone géographique couverte.
+
+### Résultat attendu
+
+Le système crée un dossier commercial contenant :
+
+```text
+Profil du client
+Offres disponibles
+Propositions de valeur
+Arguments commerciaux
+Objections et réponses
+Preuves disponibles
+Marchés ciblés
+Contraintes de prospection
+```
+
+---
+
+## 4.2 Phase 2 — Définition de l’ICP
+
+L’ICP représente le type d’entreprise idéal à cibler.
+
+### Critères possibles
+
+* pays ;
+* région ;
+* ville ;
+* secteur ;
+* sous-secteur ;
+* type d’entreprise ;
+* nombre d’employés ;
+* chiffre d’affaires estimé ;
+* nombre de sites ;
+* nombre de clients ;
+* technologies utilisées ;
+* croissance ;
+* recrutements en cours ;
+* événements récents ;
+* levée de fonds ;
+* maturité numérique ;
+* problématiques potentielles ;
+* budget estimé ;
+* niveau d’urgence ;
+* compatibilité avec l’offre.
+
+### Exemple
+
+```text
+Secteur : enseignement supérieur
+Pays : France
+Type : école privée, CFA ou organisme de formation
+Nombre d’étudiants : supérieur à 300
+Alternance : proposée
+Décideurs : directeur, responsable carrière, responsable relations entreprises
+Problème : processus manuel de recherche d’alternance
+```
+
+### Fonctionnalités requises
+
+* création de plusieurs ICP ;
+* duplication d’un ICP ;
+* activation et désactivation ;
+* versionnement ;
+* ajout de critères obligatoires ;
+* ajout de critères préférés ;
+* définition de critères d’exclusion ;
+* définition de pondérations ;
+* test de l’ICP sur des exemples ;
+* génération assistée par IA.
+
+---
+
+## 4.3 Phase 3 — Définition des Buyer Personas
+
+L’entreprise peut être pertinente, mais le mauvais interlocuteur peut rendre la prospection inefficace.
+
+### Informations du persona
+
+* intitulé du poste ;
+* niveau hiérarchique ;
+* département ;
+* responsabilités ;
+* objectifs professionnels ;
+* difficultés quotidiennes ;
+* pouvoir de décision ;
+* influence sur l’achat ;
+* objections probables ;
+* indicateurs de performance ;
+* ton de communication préféré ;
+* canaux de contact privilégiés.
+
+### Exemples de personas
+
+```text
+Responsable Career Center
+Directeur d’école
+Responsable relations entreprises
+Directeur commercial
+Responsable marketing
+Directeur des opérations
+Responsable informatique
+Fondateur
+CEO
+```
+
+### Rôles dans la décision
+
+Chaque contact peut être classé comme :
+
+* décideur économique ;
+* décideur opérationnel ;
+* utilisateur ;
+* influenceur ;
+* prescripteur ;
+* validateur technique ;
+* validateur juridique ;
+* bloqueur ;
+* simple point d’entrée.
+
+---
+
+## 4.4 Phase 4 — Recherche des entreprises
+
+Le système recherche des entreprises correspondant à l’ICP.
+
+### Sources possibles
+
+* moteurs de recherche ;
+* annuaires professionnels ;
+* sites institutionnels ;
+* sites des entreprises ;
+* Google Maps ;
+* bases ouvertes ;
+* plateformes B2B autorisées ;
+* APIs commerciales ;
+* fichiers importés ;
+* CRM du client ;
+* Google Sheets ;
+* fichiers CSV ou Excel ;
+* formulaires entrants ;
+* salons et listes d’exposants ;
+* associations professionnelles.
+
+### Informations minimales à collecter
+
+* nom de l’entreprise ;
+* site web ;
+* domaine ;
+* secteur ;
+* description ;
+* pays ;
+* ville ;
+* adresse ;
+* taille ;
+* source ;
+* date de collecte ;
+* statut de la recherche ;
+* score de confiance.
+
+### Contrôles automatiques
+
+* détection des doublons ;
+* normalisation du nom ;
+* normalisation du domaine ;
+* vérification du site ;
+* exclusion des domaines génériques ;
+* exclusion des entreprises blacklistées ;
+* vérification du pays ;
+* enregistrement de la source ;
+* vérification de la compatibilité avec l’ICP.
+
+---
+
+## 4.5 Phase 5 — Recherche des décideurs
+
+Pour chaque entreprise, le système recherche les contacts adaptés.
+
+### Données du contact
+
+* prénom ;
+* nom ;
+* titre ;
+* département ;
+* niveau hiérarchique ;
+* email professionnel ;
+* téléphone professionnel ;
+* profil LinkedIn ;
+* localisation ;
+* langue ;
+* rôle dans la décision ;
+* source ;
+* date de collecte ;
+* niveau de confiance.
+
+### Méthodes
+
+* analyse du site de l’entreprise ;
+* pages équipe ;
+* pages direction ;
+* communiqués ;
+* publications professionnelles ;
+* moteurs de recherche ;
+* APIs d’enrichissement ;
+* données publiques ;
+* imports manuels.
+
+### Règles
+
+* rechercher plusieurs contacts par entreprise ;
+* prioriser les contacts correspondant au persona ;
+* ne pas supposer une adresse email sans la marquer comme estimée ;
+* conserver la source de chaque information ;
+* distinguer les données confirmées des données déduites ;
+* éviter les données privées inutiles.
+
+---
+
+## 4.6 Phase 6 — Enrichissement des entreprises
+
+L’enrichissement complète les informations de base.
+
+### Données d’entreprise possibles
+
+* nombre d’employés ;
+* chiffre d’affaires estimé ;
+* année de création ;
+* nombre de sites ;
+* produits et services ;
+* clients cibles ;
+* technologies utilisées ;
+* réseaux sociaux ;
+* actualités ;
+* recrutements ;
+* levées de fonds ;
+* partenaires ;
+* concurrents ;
+* présence internationale ;
+* signaux de croissance ;
+* maturité digitale ;
+* outils utilisés ;
+* problèmes observables ;
+* pages importantes du site.
+
+### Analyse IA
+
+L’IA peut produire :
+
+* résumé de l’entreprise ;
+* description de son modèle économique ;
+* synthèse de ses offres ;
+* hypothèses de problèmes ;
+* raisons expliquant la pertinence du prospect ;
+* arguments spécifiques ;
+* risques de non-qualification ;
+* niveau de confiance.
+
+Chaque information produite par l’IA doit être distinguée entre :
+
+```text
+Fait confirmé
+Fait extrait
+Estimation
+Hypothèse
+Interprétation
+Information non vérifiée
+```
+
+---
+
+## 4.7 Phase 7 — Vérification des données
+
+Avant l’utilisation d’un contact, le système effectue plusieurs validations.
+
+### Vérification email
+
+* format valide ;
+* domaine existant ;
+* enregistrement MX ;
+* boîte potentiellement valide ;
+* adresse générique ou personnelle ;
+* adresse professionnelle ;
+* rôle-based email ;
+* disposable email ;
+* résultat du fournisseur de vérification ;
+* date de vérification.
+
+### Statuts email possibles
+
+```text
+Valid
+Risky
+Catch-all
+Unknown
+Invalid
+Disposable
+Role-based
+Suppressed
+Bounced
+Unsubscribed
+```
+
+### Vérification du téléphone
+
+* format international ;
+* indicatif pays ;
+* type fixe ou mobile ;
+* duplications ;
+* statut de validation ;
+* source.
+
+### Déduplication
+
+La déduplication doit fonctionner selon :
+
+* domaine ;
+* nom normalisé ;
+* email ;
+* téléphone ;
+* URL LinkedIn ;
+* identifiant fournisseur ;
+* combinaison nom + entreprise.
+
+---
+
+## 4.8 Phase 8 — Qualification et scoring
+
+La qualification combine des règles déterministes et une analyse IA.
+
+### Types de scoring
+
+#### Fit Score
+
+Mesure la compatibilité avec l’ICP.
+
+Exemples :
+
+* secteur compatible ;
+* pays ciblé ;
+* taille adaptée ;
+* activité compatible ;
+* technologie pertinente ;
+* budget potentiel ;
+* persona disponible.
+
+#### Intent Score
+
+Mesure les signaux d’intérêt ou de besoin.
+
+Exemples :
+
+* recrutement récent ;
+* nouvelle implantation ;
+* croissance ;
+* changement de direction ;
+* projet annoncé ;
+* téléchargement d’un contenu ;
+* visite d’une page ;
+* réponse précédente ;
+* interaction avec une campagne.
+
+#### Data Quality Score
+
+Mesure la qualité des données.
+
+Exemples :
+
+* domaine vérifié ;
+* décideur identifié ;
+* email valide ;
+* téléphone disponible ;
+* sources fiables ;
+* données récentes.
+
+#### Engagement Score
+
+Mesure les interactions avec la prospection.
+
+Exemples :
+
+* email délivré ;
+* clic ;
+* réponse ;
+* rendez-vous ;
+* demande d’information ;
+* interaction antérieure.
+
+### Exemple de score global
+
+```text
+Score global =
+40 % Fit Score
++ 25 % Intent Score
++ 20 % Data Quality Score
++ 15 % Engagement Score
+```
+
+### Classification
+
+```text
+90–100 : priorité critique
+75–89  : très qualifié
+60–74  : qualifié
+40–59  : à enrichir
+0–39   : non qualifié
+```
+
+### Sorties du moteur
+
+* score total ;
+* sous-scores ;
+* statut ;
+* raisons ;
+* critères satisfaits ;
+* critères manquants ;
+* risques ;
+* prochaine action recommandée ;
+* confiance du modèle ;
+* date du calcul ;
+* version du modèle de scoring.
+
+---
+
+## 4.9 Phase 9 — Segmentation
+
+Les prospects qualifiés doivent être regroupés.
+
+### Segments possibles
+
+* secteur ;
+* taille ;
+* pays ;
+* langue ;
+* persona ;
+* problématique ;
+* offre ;
+* score ;
+* maturité ;
+* source ;
+* niveau d’intention ;
+* étape du pipeline ;
+* statut de campagne.
+
+### Objectifs
+
+* adapter les messages ;
+* adapter les canaux ;
+* adapter la cadence ;
+* adapter la proposition de valeur ;
+* comparer les performances ;
+* effectuer des tests A/B.
+
+---
+
+## 4.10 Phase 10 — Construction des campagnes
+
+Une campagne contient :
+
+* un objectif ;
+* une audience ;
+* une offre ;
+* un ou plusieurs canaux ;
+* une séquence ;
+* des messages ;
+* des délais ;
+* des règles d’arrêt ;
+* des limites d’envoi ;
+* des tests ;
+* des indicateurs de réussite.
+
+### Types de campagnes
+
+* prospection froide ;
+* réactivation ;
+* suivi après événement ;
+* relance d’anciens prospects ;
+* lancement d’offre ;
+* invitation à une démonstration ;
+* nurturing ;
+* recommandation ;
+* upsell ;
+* cross-sell.
+
+### États d’une campagne
+
+```text
+Draft
+Ready for review
+Approved
+Scheduled
+Running
+Paused
+Completed
+Cancelled
+Archived
+Failed
+```
+
+---
+
+## 4.11 Phase 11 — Génération et personnalisation des messages
+
+L’IA génère les messages à partir des données réelles du prospect.
+
+### Éléments personnalisables
+
+* objet ;
+* salutation ;
+* nom du contact ;
+* entreprise ;
+* fonction ;
+* secteur ;
+* événement récent ;
+* problème observé ;
+* proposition de valeur ;
+* preuve ;
+* appel à l’action ;
+* signature ;
+* langue ;
+* ton ;
+* longueur.
+
+### Structure recommandée
+
+```text
+Observation pertinente
+→ problème ou opportunité
+→ proposition de valeur
+→ preuve ou crédibilité
+→ appel à l’action simple
+```
+
+### Garde-fous
+
+Le système doit empêcher :
+
+* les fausses affirmations ;
+* la fausse personnalisation ;
+* les informations inventées ;
+* les promesses irréalistes ;
+* les données sensibles ;
+* les formulations manipulatrices ;
+* les messages contradictoires ;
+* les mentions d’une information non vérifiée comme un fait.
+
+### Validation
+
+Chaque message peut avoir l’un des statuts suivants :
+
+```text
+Generated
+Needs review
+Approved
+Rejected
+Edited
+Scheduled
+Sent
+```
+
+---
+
+## 4.12 Phase 12 — Validation humaine
+
+La validation humaine doit être disponible avant l’envoi.
+
+### Écran de validation
+
+L’utilisateur doit voir :
+
+* le prospect ;
+* l’entreprise ;
+* les sources ;
+* le score ;
+* les raisons de qualification ;
+* le message généré ;
+* les informations utilisées ;
+* les alertes ;
+* le canal prévu ;
+* la date d’envoi ;
+* les relances prévues.
+
+### Actions
+
+* approuver ;
+* modifier ;
+* rejeter ;
+* demander une nouvelle génération ;
+* exclure le prospect ;
+* changer le contact ;
+* changer la séquence ;
+* reporter ;
+* envoyer un test.
+
+### Modes d’automatisation
+
+```text
+Mode manuel
+Tous les messages sont validés.
+
+Mode semi-automatique
+Seuls les prospects à risque sont validés.
+
+Mode automatique contrôlé
+Les messages respectant les règles sont envoyés automatiquement.
+```
+
+---
+
+## 4.13 Phase 13 — Envoi multicanal
+
+### Canaux possibles
+
+* email ;
+* LinkedIn ;
+* téléphone ;
+* SMS, lorsqu’il est juridiquement et contractuellement autorisé ;
+* WhatsApp Business, lorsque cela est autorisé ;
+* formulaire de contact ;
+* message CRM ;
+* courrier ;
+* retargeting ;
+* publicité personnalisée.
+
+### Priorité MVP
+
+Pour la première version :
+
+```text
+1. Email
+2. Calendrier
+3. CRM
+4. LinkedIn assisté
+```
+
+L’automatisation agressive de certaines plateformes peut violer leurs conditions d’utilisation. Les intégrations doivent donc utiliser les APIs officielles ou rester assistées lorsqu’une automatisation complète n’est pas autorisée.
+
+### Moteur d’envoi email
+
+Il doit gérer :
+
+* plusieurs comptes expéditeurs ;
+* plusieurs domaines ;
+* signatures ;
+* plages horaires ;
+* fuseaux horaires ;
+* limites par jour ;
+* délais aléatoires raisonnables ;
+* priorité des messages ;
+* files d’attente ;
+* tentatives ;
+* erreurs ;
+* rebonds ;
+* désabonnements ;
+* réponses ;
+* pause automatique.
+
+---
+
+## 4.14 Phase 14 — Relances automatiques
+
+Une séquence peut contenir plusieurs étapes.
+
+### Exemple
+
+```text
+Jour 0  : premier email
+Jour 3  : relance 1
+Jour 7  : relance 2
+Jour 14 : relance finale
+```
+
+### Règles d’arrêt
+
+La séquence doit s’arrêter si :
+
+* le prospect répond ;
+* le prospect se désabonne ;
+* l’email rebondit ;
+* un rendez-vous est réservé ;
+* le prospect est blacklisté ;
+* le contact change d’entreprise ;
+* l’utilisateur arrête manuellement la séquence ;
+* la campagne atteint une date limite ;
+* une règle de conformité bloque l’envoi.
+
+### Adaptation par IA
+
+L’IA peut proposer une relance différente selon :
+
+* le message précédent ;
+* les informations disponibles ;
+* le niveau d’engagement ;
+* le rôle du prospect ;
+* l’objectif de la campagne.
+
+---
+
+## 4.15 Phase 15 — Réception et classification des réponses
+
+Le système doit lire et classifier les réponses entrantes.
+
+### Catégories
+
+```text
+Positive interest
+Request for information
+Meeting requested
+Interested later
+Referral to another person
+Wrong contact
+Not interested
+Unsubscribe
+Out of office
+Automatic reply
+Objection
+Already customer
+Competitor
+Bounce
+Spam complaint
+Unclear
+```
+
+### Informations extraites
+
+* sentiment ;
+* intention ;
+* objection ;
+* disponibilité ;
+* date proposée ;
+* nouveau contact ;
+* urgence ;
+* prochaine action ;
+* niveau de confiance.
+
+### Actions automatiques
+
+```text
+Intérêt positif
+→ créer une opportunité et proposer un rendez-vous
+
+Demande d’information
+→ préparer une réponse et joindre le document adapté
+
+Intéressé plus tard
+→ créer une tâche future
+
+Mauvais contact
+→ rechercher le bon interlocuteur
+
+Désabonnement
+→ arrêter immédiatement et ajouter à la liste d’exclusion
+
+Absence du bureau
+→ programmer une relance après le retour
+
+Objection
+→ préparer une réponse pour validation
+```
+
+Les réponses commerciales importantes doivent pouvoir être validées humainement avant envoi.
+
+---
+
+## 4.16 Phase 16 — Prise de rendez-vous
+
+### Fonctionnalités
+
+* connexion Google Calendar ou Microsoft Calendar ;
+* intégration avec un outil de réservation ;
+* lecture des disponibilités ;
+* proposition de créneaux ;
+* fuseaux horaires ;
+* durée du rendez-vous ;
+* délai minimal ;
+* temps tampon ;
+* confirmation ;
+* rappel ;
+* reprogrammation ;
+* annulation ;
+* ajout d’un lien de visioconférence ;
+* synchronisation CRM.
+
+### Informations demandées au prospect
+
+* nom ;
+* prénom ;
+* email ;
+* entreprise ;
+* fonction ;
+* téléphone facultatif ;
+* taille de l’entreprise ;
+* problème principal ;
+* objectif ;
+* solution actuelle ;
+* budget indicatif facultatif ;
+* calendrier du projet ;
+* commentaire ;
+* créneau sélectionné.
+
+---
+
+## 4.17 Phase 17 — Pipeline commercial
+
+Après une réponse positive, le lead devient une opportunité.
+
+### Étapes proposées
+
+```text
+New lead
+Qualified
+Contacted
+Replied
+Meeting booked
+Discovery completed
+Opportunity
+Proposal sent
+Negotiation
+Won
+Lost
+Nurturing
+Disqualified
+```
+
+### Informations de l’opportunité
+
+* entreprise ;
+* contacts ;
+* offre ;
+* valeur estimée ;
+* probabilité ;
+* responsable ;
+* étape ;
+* date de clôture prévue ;
+* historique ;
+* réunions ;
+* tâches ;
+* objections ;
+* proposition ;
+* documents ;
+* raison de perte.
+
+### Automatisations
+
+* créer une tâche ;
+* assigner un commercial ;
+* notifier l’équipe ;
+* mettre à jour la probabilité ;
+* générer un résumé ;
+* préparer une proposition ;
+* programmer une relance ;
+* enregistrer une raison de perte.
+
+---
+
+## 4.18 Phase 18 — Closing et suivi
+
+La plateforme peut assister la vente sans remplacer entièrement le commercial.
+
+### Fonctions possibles
+
+* préparation des discovery calls ;
+* résumé de l’entreprise ;
+* génération des questions ;
+* transcription de réunion ;
+* résumé de réunion ;
+* extraction des besoins ;
+* extraction des objections ;
+* création d’une proposition ;
+* génération d’un email de suivi ;
+* création des prochaines tâches ;
+* analyse des raisons de gain ou de perte.
+
+---
+
+# 5. Modules fonctionnels de la plateforme
+
+## 5.1 Gestion des utilisateurs
+
+* inscription ;
+* connexion ;
+* réinitialisation du mot de passe ;
+* authentification multifacteur ;
+* invitations ;
+* gestion du profil ;
+* gestion des sessions ;
+* historique des connexions.
+
+## 5.2 Gestion des organisations
+
+* création d’une organisation ;
+* plusieurs espaces clients ;
+* isolation des données ;
+* paramètres ;
+* fuseau horaire ;
+* langue ;
+* identité visuelle ;
+* domaines autorisés ;
+* quotas ;
+* suivi des coûts et quotas techniques des fournisseurs.
+
+Les espaces clients sont créés manuellement par un administrateur autorisé selon le workflow : création du client, création du workspace, ajout des utilisateurs, attribution des rôles, configuration des intégrations, définition des quotas techniques, puis activation. Les seuls statuts prévus sont `draft`, `onboarding`, `active`, `paused` et `archived` ; ils sont purement opérationnels.
+
+## 5.3 Rôles et permissions
+
+Rôles possibles :
+
+* Super Admin ;
+* Admin ;
+* Agency Owner ;
+* Campaign Manager ;
+* SDR ;
+* Sales Manager ;
+* Sales Representative ;
+* Data Researcher ;
+* Reviewer ;
+* Analyst ;
+* Client Viewer.
+
+Permissions :
+
+* lire ;
+* créer ;
+* modifier ;
+* supprimer ;
+* exporter ;
+* envoyer ;
+* approuver ;
+* gérer les intégrations ;
+* consulter les données personnelles ;
+* administrer les utilisateurs.
+
+---
+
+# 6. Modèle de données principal
+
+## 6.1 Entités
+
+La base doit au minimum contenir :
+
+```text
+Organization
+User
+Role
+Permission
+Client
+Offer
+ICP
+Persona
+Company
+Contact
+CompanySource
+ContactSource
+EnrichmentJob
+EmailVerification
+Lead
+LeadScore
+Segment
+Campaign
+Sequence
+SequenceStep
+MessageTemplate
+GeneratedMessage
+SenderAccount
+OutboundMessage
+DeliveryEvent
+Reply
+ReplyClassification
+SuppressionEntry
+Meeting
+Opportunity
+Pipeline
+PipelineStage
+Task
+Note
+Integration
+Webhook
+AuditLog
+AIExecution
+UsageMetric
+Report
+Notification
+```
+
+## 6.2 Relations simplifiées
+
+```text
+Organization
+ ├── Users
+ ├── Clients
+ ├── Integrations
+ └── Campaigns
+
+Client
+ ├── Offers
+ ├── ICPs
+ ├── Personas
+ └── Pipelines
+
+Company
+ ├── Contacts
+ ├── Leads
+ ├── Sources
+ └── Opportunities
+
+Campaign
+ ├── Segments
+ ├── Sequences
+ ├── Messages
+ └── Delivery Events
+
+Lead
+ ├── Company
+ ├── Contact
+ ├── Scores
+ ├── Messages
+ ├── Replies
+ ├── Meetings
+ └── Opportunity
+```
+
+## 6.3 Champs critiques à conserver
+
+Chaque donnée enrichie doit idéalement posséder :
+
+* valeur ;
+* source ;
+* date de collecte ;
+* date de dernière vérification ;
+* méthode de collecte ;
+* score de confiance ;
+* statut de validation ;
+* utilisateur ou agent responsable ;
+* historique des modifications.
+
+---
+
+# 7. Architecture technique
+
+## 7.1 Architecture logique
+
+```text
+Frontend Web
+      │
+      ▼
+API Gateway / Backend
+      │
+      ├── Authentication Service
+      ├── Lead Service
+      ├── Campaign Service
+      ├── Email Service
+      ├── CRM Service
+      ├── AI Service
+      ├── Analytics Service
+      └── Integration Service
+      │
+      ▼
+PostgreSQL + Object Storage
+      │
+      ▼
+Queue / Workflow Engine
+      │
+      ├── Research Workers
+      ├── Enrichment Workers
+      ├── AI Workers
+      ├── Email Workers
+      ├── Reply Workers
+      └── Reporting Workers
+```
+
+## 7.2 Stack recommandée
+
+### Frontend
+
+* Next.js ;
+* TypeScript ;
+* bibliothèque de composants accessible ;
+* gestion des formulaires ;
+* graphiques ;
+* authentification sécurisée.
+
+### Backend
+
+Deux choix cohérents :
+
+```text
+Option A : FastAPI + Python
+Option B : NestJS + TypeScript
+```
+
+Pour un projet fortement orienté agents IA et traitement de données, FastAPI est particulièrement adapté.
+
+### Base de données
+
+* PostgreSQL ;
+* extension vectorielle si besoin de recherche sémantique ;
+* migrations ;
+* indexation ;
+* sauvegardes ;
+* isolation par organisation.
+
+### Cache et files d’attente
+
+* Redis ;
+* Celery, BullMQ ou moteur de workflow ;
+* tâches planifiées ;
+* retry ;
+* dead-letter queue ;
+* verrouillage distribué.
+
+### Workflow engine
+
+Options :
+
+* Trigger.dev ;
+* Temporal ;
+* n8n pour certaines intégrations ;
+* orchestration interne.
+
+Pour les workflows critiques, les règles métiers doivent rester dans le backend ou un moteur durable, et non uniquement dans des scénarios visuels difficiles à versionner.
+
+### Stockage
+
+* stockage d’objets compatible S3 ;
+* documents ;
+* exports ;
+* pièces jointes ;
+* rapports ;
+* logs archivés.
+
+### IA
+
+* couche d’abstraction multi-modèle ;
+* structured outputs ;
+* validation avec des schémas ;
+* suivi des coûts ;
+* cache ;
+* versionnement des prompts ;
+* fallback ;
+* limites ;
+* évaluation.
+
+### Observabilité
+
+* journalisation structurée ;
+* Sentry ;
+* Prometheus ;
+* Grafana ;
+* traces ;
+* métriques ;
+* alertes ;
+* suivi des coûts IA.
+
+---
+
+# 8. Architecture des agents IA
+
+## 8.1 Orchestrator Agent
+
+Responsabilités :
+
+* comprendre l’objectif ;
+* sélectionner le workflow ;
+* appeler les agents ;
+* vérifier les préconditions ;
+* gérer les erreurs ;
+* demander une validation ;
+* arrêter les actions risquées ;
+* générer un rapport final.
+
+## 8.2 ICP Agent
+
+* transforme les informations client en ICP ;
+* propose des critères ;
+* détecte les incohérences ;
+* génère les exclusions ;
+* prépare le scoring.
+
+## 8.3 Research Agent
+
+* recherche les entreprises ;
+* collecte les sources ;
+* déduplique ;
+* produit une sortie structurée.
+
+## 8.4 Contact Finder Agent
+
+* recherche les décideurs ;
+* classe les contacts ;
+* identifie le meilleur point d’entrée ;
+* indique son niveau de confiance.
+
+## 8.5 Enrichment Agent
+
+* analyse les sites ;
+* complète les données ;
+* résume l’entreprise ;
+* détecte les signaux pertinents.
+
+## 8.6 Qualification Agent
+
+* calcule ou recommande un score ;
+* explique sa décision ;
+* détecte les données manquantes ;
+* propose la prochaine action.
+
+## 8.7 Personalization Agent
+
+* génère les messages ;
+* adapte le ton ;
+* utilise uniquement les informations autorisées ;
+* produit plusieurs variantes.
+
+## 8.8 Compliance Agent
+
+* vérifie les règles d’envoi ;
+* contrôle les listes d’exclusion ;
+* vérifie la transparence ;
+* détecte les données sensibles ;
+* bloque les campagnes non conformes.
+
+## 8.9 Deliverability Agent
+
+* surveille les rebonds ;
+* surveille les plaintes ;
+* détecte les problèmes de domaine ;
+* recommande une baisse des volumes ;
+* déclenche une pause.
+
+## 8.10 Reply Agent
+
+* classifie les réponses ;
+* extrait les informations ;
+* propose une réponse ;
+* met à jour le pipeline.
+
+## 8.11 Sales Assistant Agent
+
+* prépare les réunions ;
+* résume les prospects ;
+* génère les questions ;
+* produit les suivis ;
+* met à jour les opportunités.
+
+## 8.12 Analytics Agent
+
+* analyse les campagnes ;
+* identifie les segments performants ;
+* détecte les anomalies ;
+* propose des améliorations.
+
+---
+
+# 9. Skills Codex à créer
+
+Structure recommandée :
+
+```text
+.codex/
+└── skills/
+    ├── project-architecture/
+    ├── database-design/
+    ├── api-development/
+    ├── frontend-design/
+    ├── lead-research/
+    ├── contact-finding/
+    ├── data-enrichment/
+    ├── email-verification/
+    ├── lead-scoring/
+    ├── campaign-building/
+    ├── email-personalization/
+    ├── reply-classification/
+    ├── crm-management/
+    ├── workflow-development/
+    ├── security-review/
+    ├── compliance-review/
+    ├── testing/
+    ├── observability/
+    ├── deployment/
+    └── documentation/
+```
+
+Chaque `SKILL.md` doit préciser :
+
+* son objectif ;
+* son périmètre ;
+* ses entrées ;
+* ses sorties ;
+* ses règles ;
+* les fichiers concernés ;
+* les outils autorisés ;
+* les contrôles ;
+* les cas d’erreur ;
+* les tests obligatoires ;
+* les critères d’acceptation.
+
+---
+
+# 10. Commands Codex recommandées
+
+```text
+/project-audit
+/create-module
+/create-migration
+/create-api
+/create-ui
+/create-agent
+/create-workflow
+/create-skill
+/define-icp
+/import-leads
+/find-companies
+/find-contacts
+/enrich-leads
+/verify-emails
+/score-leads
+/create-segment
+/create-campaign
+/generate-messages
+/review-campaign
+/send-test
+/process-replies
+/generate-report
+/security-audit
+/compliance-audit
+/run-tests
+/deploy-staging
+/deploy-production
+```
+
+Les commands servent à lancer des procédures de développement contrôlées. Elles ne doivent pas devenir l’unique logique métier de la plateforme.
+
+---
+
+# 11. MCP à prévoir
+
+## MCP de développement
+
+* GitHub ;
+* documentation ;
+* système de fichiers ;
+* base de données de développement ;
+* outil de tests ;
+* observabilité.
+
+## MCP métier
+
+* PostgreSQL ;
+* Gmail ou messagerie ;
+* Google Calendar ;
+* Google Drive ;
+* CRM ;
+* moteur de recherche autorisé ;
+* navigateur contrôlé ;
+* stockage ;
+* analytics.
+
+## Règles de sécurité MCP
+
+* permissions minimales ;
+* environnements séparés ;
+* lecture seule par défaut ;
+* secrets hors du dépôt ;
+* audit des actions ;
+* aucune suppression massive sans confirmation ;
+* aucun envoi massif sans contrôle ;
+* limites de volume ;
+* accès client isolé.
+
+---
+
+# 12. Pages du frontend
+
+## Pages publiques
+
+* accueil ;
+* fonctionnalités ;
+* tarifs futurs ;
+* connexion ;
+* inscription ;
+* confidentialité ;
+* conditions ;
+* contact.
+
+## Application
+
+### Dashboard
+
+* leads collectés ;
+* leads qualifiés ;
+* emails envoyés ;
+* réponses ;
+* rendez-vous ;
+* opportunités ;
+* ventes ;
+* alertes.
+
+### Clients
+
+* liste des clients ;
+* profil ;
+* offres ;
+* documents ;
+* paramètres.
+
+### ICP et personas
+
+* création ;
+* édition ;
+* critères ;
+* exclusions ;
+* scoring.
+
+### Companies
+
+* tableau ;
+* filtres ;
+* fiche entreprise ;
+* sources ;
+* enrichissement ;
+* contacts ;
+* historique.
+
+### Contacts
+
+* tableau ;
+* détails ;
+* coordonnées ;
+* statut ;
+* campagnes ;
+* communications.
+
+### Leads
+
+* vue tableau ;
+* vue kanban ;
+* scoring ;
+* segmentation ;
+* affectation ;
+* actions en masse.
+
+### Campaigns
+
+* création ;
+* audience ;
+* séquence ;
+* messages ;
+* validation ;
+* planning ;
+* résultats.
+
+### Inbox
+
+* réponses ;
+* classification ;
+* priorité ;
+* suggestion de réponse ;
+* assignation ;
+* statut.
+
+### Calendar
+
+* rendez-vous ;
+* disponibilités ;
+* réservations ;
+* historique.
+
+### Pipeline
+
+* kanban ;
+* opportunités ;
+* valeur ;
+* probabilité ;
+* prochaines actions.
+
+### Analytics
+
+* acquisition ;
+* qualité des données ;
+* délivrabilité ;
+* engagement ;
+* rendez-vous ;
+* pipeline ;
+* revenus ;
+* comparaison des campagnes.
+
+### Integrations
+
+* email ;
+* calendrier ;
+* CRM ;
+* enrichissement ;
+* stockage ;
+* webhooks ;
+* APIs.
+
+### Administration
+
+* utilisateurs ;
+* rôles ;
+* sécurité ;
+* quotas ;
+* IA ;
+* logs ;
+* conformité ;
+* exports.
+
+---
+
+# 13. API principales
+
+Exemples de routes :
+
+```text
+POST   /auth/login
+POST   /organizations
+GET    /organizations/{id}
+
+POST   /clients
+POST   /offers
+POST   /icps
+POST   /personas
+
+POST   /companies/import
+POST   /companies/search
+GET    /companies
+GET    /companies/{id}
+
+POST   /contacts/search
+POST   /contacts/verify
+
+POST   /leads
+POST   /leads/enrich
+POST   /leads/score
+POST   /leads/segment
+
+POST   /campaigns
+POST   /campaigns/{id}/approve
+POST   /campaigns/{id}/start
+POST   /campaigns/{id}/pause
+
+POST   /messages/generate
+POST   /messages/{id}/approve
+POST   /messages/{id}/send
+
+POST   /replies/classify
+POST   /meetings
+POST   /opportunities
+
+GET    /analytics/campaigns
+GET    /analytics/pipeline
+GET    /analytics/revenue
+
+POST   /integrations
+POST   /webhooks/email
+POST   /webhooks/calendar
+```
+
+Toutes les routes doivent avoir :
+
+* validation des entrées ;
+* authentification ;
+* autorisation ;
+* limitation de débit ;
+* logs ;
+* gestion des erreurs ;
+* documentation OpenAPI ;
+* tests.
+
+---
+
+# 14. Intégrations externes
+
+## Catégories
+
+### Messagerie
+
+* Gmail ;
+* Microsoft 365 ;
+* SMTP ;
+* fournisseurs transactionnels.
+
+### Calendrier
+
+* Google Calendar ;
+* Microsoft Calendar ;
+* outils de réservation.
+
+### CRM
+
+* HubSpot ;
+* Salesforce ;
+* Pipedrive ;
+* Twenty ;
+* CRM interne.
+
+### Données
+
+* services d’enrichissement ;
+* services de vérification ;
+* imports CSV ;
+* Google Sheets ;
+* Notion ;
+* bases internes.
+
+### Automatisation
+
+* n8n ;
+* Trigger.dev ;
+* webhooks ;
+* Zapier ou Make si nécessaire.
+
+### Communication interne
+
+* Slack ;
+* Microsoft Teams ;
+* Telegram pour les alertes internes.
+
+Chaque intégration doit être facultative et passer par une interface commune afin de pouvoir changer de fournisseur.
+
+---
+
+# 15. Conformité et protection des données
+
+La plateforme doit intégrer la conformité dès sa conception.
+
+Le RGPD protège les personnes physiques lorsque leurs données personnelles sont traitées. Les données purement liées à une personne morale ne sont pas traitées de la même manière, mais les coordonnées professionnelles nominatives d’un salarié restent associées à une personne physique.
+
+## Exigences
+
+* définir la finalité de chaque traitement ;
+* documenter la base juridique ;
+* limiter les données collectées ;
+* informer les personnes concernées ;
+* enregistrer les sources ;
+* permettre l’opposition ;
+* permettre la suppression lorsque cela s’applique ;
+* limiter les durées de conservation ;
+* sécuriser les données ;
+* contrôler les sous-traitants ;
+* gérer les violations de données ;
+* conserver un registre des traitements ;
+* gérer les demandes d’exercice des droits.
+
+## Prospection
+
+Les règles ne sont pas identiques pour la prospection B2B et B2C. La configuration du système doit donc distinguer clairement le type de destinataire, le canal, le pays et la base juridique avant tout envoi. La CNIL rappelle notamment que la prospection électronique B2C nécessite généralement un consentement préalable, tandis que d’autres situations peuvent relever d’un mécanisme d’opposition, sous réserve de respecter les conditions applicables.
+
+## Liste d’exclusion
+
+Le système doit conserver une liste d’exclusion permettant de ne pas recontacter une personne ayant exercé son droit d’opposition. La CNIL recommande de conserver les informations nécessaires à la prise en compte de cette opposition pendant au moins trois ans, sans les réutiliser à d’autres fins.
+
+## Conservation
+
+Les durées doivent être paramétrables selon le type de données et la finalité. Pour les prospects, la CNIL rappelle notamment une durée pouvant aller jusqu’à trois ans à compter de la collecte ou du dernier contact réellement initié par le prospect ; la simple ouverture d’un email ne constitue pas ce contact.
+
+## Fonctions techniques obligatoires
+
+* centre de préférences ;
+* lien ou mécanisme d’opposition ;
+* suppression globale ;
+* export des données ;
+* liste de suppression ;
+* journal des consentements ou bases juridiques ;
+* preuve de la source ;
+* politique de rétention ;
+* purge automatique ;
+* anonymisation ;
+* isolation par client ;
+* chiffrement ;
+* audit.
+
+Une validation juridique adaptée aux pays ciblés reste nécessaire avant une mise en production commerciale.
+
+---
+
+# 16. Délivrabilité email
+
+## Configuration technique
+
+* domaine d’envoi dédié ;
+* SPF ;
+* DKIM ;
+* DMARC ;
+* suivi de la réputation ;
+* adresses de retour ;
+* gestion des rebonds ;
+* surveillance des plaintes ;
+* pages légales ;
+* informations de contact cohérentes.
+
+## Contrôles
+
+* email vérifié avant envoi ;
+* limites par boîte ;
+* limites par domaine ;
+* limitation des envois simultanés ;
+* arrêt automatique en cas d’anomalie ;
+* suppression immédiate des invalides ;
+* séparation des emails transactionnels et de prospection ;
+* surveillance des taux de rebond ;
+* surveillance des plaintes ;
+* tests sur plusieurs fournisseurs.
+
+## À éviter
+
+* volumes massifs immédiats ;
+* bases achetées non documentées ;
+* adresses non vérifiées ;
+* contenus trompeurs ;
+* liens suspects ;
+* pièces jointes inutiles ;
+* changements brusques de volume ;
+* rotations destinées à contourner les protections anti-spam.
+
+---
+
+# 17. Sécurité
+
+## Authentification
+
+* mots de passe forts ;
+* hachage sécurisé ;
+* MFA ;
+* sessions limitées ;
+* révocation ;
+* protection contre la force brute.
+
+## Autorisation
+
+* RBAC ;
+* vérification par organisation ;
+* permissions fines ;
+* isolation multitenant ;
+* principe du moindre privilège.
+
+## Données
+
+* chiffrement en transit ;
+* chiffrement au repos ;
+* secrets dans un gestionnaire ;
+* sauvegardes ;
+* restauration testée ;
+* masquage dans les logs ;
+* export contrôlé ;
+* suppression sécurisée.
+
+## Application
+
+* validation des entrées ;
+* protection CSRF ;
+* protection XSS ;
+* protection contre les injections ;
+* limitation de débit ;
+* CORS contrôlé ;
+* analyse des dépendances ;
+* scans de sécurité ;
+* journal d’audit ;
+* webhooks signés.
+
+## IA
+
+* prévention de la prompt injection ;
+* séparation des instructions et des contenus externes ;
+* validation des sorties ;
+* outils limités ;
+* autorisation avant action ;
+* filtrage des données sensibles ;
+* budgets d’exécution ;
+* traçabilité.
+
+---
+
+# 18. Observabilité
+
+## Logs
+
+* requêtes API ;
+* actions utilisateur ;
+* exécutions des agents ;
+* appels externes ;
+* erreurs ;
+* envois ;
+* réponses ;
+* changements de statut ;
+* décisions automatiques.
+
+## Métriques
+
+* temps de réponse ;
+* taux d’erreur ;
+* longueur des queues ;
+* nombre de tâches ;
+* coûts IA ;
+* taux de succès des enrichissements ;
+* taux de vérification ;
+* taux de rebond ;
+* taux de réponse ;
+* rendez-vous ;
+* conversions.
+
+## Alertes
+
+* erreur d’intégration ;
+* queue bloquée ;
+* hausse des rebonds ;
+* hausse des plaintes ;
+* échec des webhooks ;
+* dépassement de quota ;
+* coût IA anormal ;
+* base de données indisponible ;
+* sauvegarde échouée.
+
+---
+
+# 19. Analytics et KPI
+
+## Acquisition
+
+* entreprises trouvées ;
+* contacts trouvés ;
+* coût par entreprise ;
+* coût par contact ;
+* sources les plus performantes.
+
+## Qualité des données
+
+* taux d’emails trouvés ;
+* taux d’emails valides ;
+* taux de doublons ;
+* taux d’enrichissement ;
+* fraîcheur des données.
+
+## Campagnes
+
+* contacts ciblés ;
+* messages envoyés ;
+* messages délivrés ;
+* rebonds ;
+* réponses ;
+* réponses positives ;
+* désabonnements ;
+* plaintes ;
+* rendez-vous.
+
+## Pipeline
+
+* leads qualifiés ;
+* opportunités ;
+* propositions ;
+* ventes ;
+* pertes ;
+* valeur du pipeline ;
+* durée du cycle de vente ;
+* taux de conversion par étape.
+
+## Finance
+
+* coût des outils ;
+* coût IA ;
+* coût d’enrichissement ;
+* coût d’envoi ;
+* coût par lead ;
+* coût par rendez-vous ;
+* coût d’acquisition ;
+* revenu généré ;
+* ROI.
+
+## IA
+
+* appels par agent ;
+* tokens ;
+* coût ;
+* latence ;
+* erreurs ;
+* taux de validation humaine ;
+* taux de modifications ;
+* précision de classification ;
+* hallucinations détectées.
+
+---
+
+# 20. Tests
+
+## Tests unitaires
+
+* services ;
+* règles de scoring ;
+* validations ;
+* transformations ;
+* permissions ;
+* classification.
+
+## Tests d’intégration
+
+* base de données ;
+* emails ;
+* calendrier ;
+* CRM ;
+* fournisseurs IA ;
+* webhooks ;
+* files d’attente.
+
+## Tests end-to-end
+
+```text
+Création client
+→ création ICP
+→ import
+→ enrichissement
+→ scoring
+→ campagne
+→ validation
+→ envoi test
+→ réponse simulée
+→ rendez-vous
+→ opportunité
+```
+
+## Tests IA
+
+* jeux de données de référence ;
+* exactitude des extractions ;
+* exactitude des classifications ;
+* respect du format ;
+* absence d’invention ;
+* robustesse aux contenus malveillants ;
+* cohérence multilingue ;
+* comparaison des versions de prompts.
+
+## Tests non fonctionnels
+
+* charge ;
+* sécurité ;
+* reprise après panne ;
+* isolation multitenant ;
+* sauvegarde et restauration ;
+* limites de volume ;
+* performance.
+
+---
+
+# 21. Environnements
+
+```text
+Local
+Development
+Testing
+Staging
+Production
+```
+
+Chaque environnement doit avoir :
+
+* sa base ;
+* ses clés ;
+* ses domaines ;
+* ses comptes d’envoi ;
+* ses quotas ;
+* ses webhooks ;
+* ses logs.
+
+Aucune donnée réelle sensible ne doit être copiée librement dans les environnements de test.
+
+---
+
+# 22. CI/CD
+
+Pipeline recommandé :
+
+```text
+Push Git
+→ lint
+→ type checking
+→ tests unitaires
+→ tests d’intégration
+→ scan de sécurité
+→ build Docker
+→ migrations contrôlées
+→ déploiement staging
+→ smoke tests
+→ approbation
+→ déploiement production
+→ vérification
+```
+
+Le système doit permettre :
+
+* rollback ;
+* migrations réversibles ;
+* versionnement ;
+* feature flags ;
+* déploiement progressif ;
+* historique des releases.
+
+---
+
+# 23. Documentation
+
+## Documentation fonctionnelle
+
+* guide utilisateur ;
+* guide administrateur ;
+* fonctionnement des campagnes ;
+* gestion des réponses ;
+* analytics ;
+* conformité.
+
+## Documentation technique
+
+* architecture ;
+* base de données ;
+* APIs ;
+* workflows ;
+* agents ;
+* prompts ;
+* intégrations ;
+* sécurité ;
+* déploiement ;
+* sauvegarde ;
+* dépannage.
+
+## Documentation Codex
+
+* `AGENTS.md` ;
+* skills ;
+* commands ;
+* conventions ;
+* définition de terminé ;
+* règles de test ;
+* règles de sécurité ;
+* procédures de migration ;
+* procédures de release.
+
+---
+
+# 24. Phases de réalisation
+
+## Phase 0 — Cadrage
+
+Livrables :
+
+* vision ;
+* utilisateurs ;
+* cas d’usage ;
+* architecture ;
+* modèle de données ;
+* règles de conformité ;
+* choix de stack ;
+* backlog ;
+* maquettes.
+
+## Phase 1 — Fondation
+
+Construire :
+
+* monorepo ;
+* authentification ;
+* organisations ;
+* rôles ;
+* base PostgreSQL ;
+* frontend ;
+* backend ;
+* Redis ;
+* CI/CD ;
+* Docker ;
+* logs.
+
+## Phase 2 — Gestion des leads
+
+Construire :
+
+* clients ;
+* offres ;
+* ICP ;
+* personas ;
+* entreprises ;
+* contacts ;
+* imports ;
+* déduplication ;
+* sources.
+
+## Phase 3 — Enrichissement et scoring
+
+Construire :
+
+* connecteurs ;
+* jobs ;
+* analyse de sites ;
+* vérification email ;
+* scoring ;
+* qualification ;
+* segmentation.
+
+## Phase 4 — Campagnes
+
+Construire :
+
+* campagnes ;
+* séquences ;
+* templates ;
+* génération IA ;
+* validation humaine ;
+* planification.
+
+## Phase 5 — Envoi
+
+Construire :
+
+* comptes expéditeurs ;
+* queues ;
+* limites ;
+* envoi ;
+* rebonds ;
+* liste d’exclusion ;
+* événements.
+
+## Phase 6 — Réponses et calendrier
+
+Construire :
+
+* inbox ;
+* classification ;
+* suggestions ;
+* calendrier ;
+* réservation ;
+* notifications.
+
+## Phase 7 — CRM et pipeline
+
+Construire :
+
+* opportunités ;
+* kanban ;
+* tâches ;
+* notes ;
+* propositions ;
+* raisons de perte.
+
+## Phase 8 — Analytics
+
+Construire :
+
+* dashboard ;
+* KPI ;
+* rapports ;
+* coûts ;
+* ROI ;
+* recommandations IA.
+
+## Phase 9 — Industrialisation
+
+Construire :
+
+* sécurité avancée ;
+* conformité ;
+* monitoring ;
+* tests de charge ;
+* sauvegardes ;
+* optimisation ;
+* documentation ;
+* déploiement production.
+
+---
+
+# 25. MVP recommandé
+
+Le MVP ne doit pas chercher à reproduire immédiatement Apollo, Clay, Instantly et HubSpot.
+
+## Périmètre MVP
+
+```text
+1. Authentification
+2. Organisations
+3. Client et offre
+4. ICP et persona
+5. Import CSV
+6. Entreprises et contacts
+7. Enrichissement d’un site
+8. Vérification email
+9. Scoring
+10. Segmentation
+11. Campagne email
+12. Génération IA
+13. Validation humaine
+14. Envoi contrôlé
+15. Relances
+16. Réception des réponses
+17. Classification
+18. Rendez-vous
+19. Pipeline simple
+20. Dashboard
+```
+
+## Hors MVP
+
+* automatisation complète de LinkedIn ;
+* téléphonie ;
+* SMS ;
+* WhatsApp ;
+* génération de propositions complexes ;
+* paiement en ligne et facturation client automatique, définitivement hors périmètre ;
+* marketplace ;
+* application mobile ;
+* prédiction avancée des ventes ;
+* dizaines de fournisseurs d’enrichissement.
+
+---
+
+# 26. Critères d’acceptation du MVP
+
+Le MVP sera considéré comme fonctionnel lorsqu’un utilisateur pourra :
+
+1. créer son organisation ;
+2. configurer son entreprise et son offre ;
+3. définir un ICP ;
+4. importer des entreprises et contacts ;
+5. détecter les doublons ;
+6. enrichir les entreprises ;
+7. vérifier les emails ;
+8. scorer les prospects ;
+9. créer un segment ;
+10. créer une campagne ;
+11. générer les messages ;
+12. valider les messages ;
+13. envoyer un test ;
+14. lancer une séquence limitée ;
+15. arrêter les relances après une réponse ;
+16. classifier les réponses ;
+17. enregistrer un rendez-vous ;
+18. créer une opportunité ;
+19. consulter les résultats ;
+20. exporter un rapport ;
+21. gérer les exclusions ;
+22. consulter l’historique des actions.
+
+---
+
+# 27. Principes d’architecture essentiels
+
+## Principe 1
+
+```text
+L’IA comprend, extrait, classe et recommande.
+Le code déterministe contrôle, valide et exécute.
+```
+
+## Principe 2
+
+Aucun agent ne doit pouvoir envoyer, supprimer ou modifier massivement des données sans permissions et limites.
+
+## Principe 3
+
+Chaque information externe doit conserver sa source.
+
+## Principe 4
+
+Chaque décision IA importante doit être traçable.
+
+## Principe 5
+
+Les workflows doivent être idempotents : une tâche relancée ne doit pas provoquer un double envoi.
+
+## Principe 6
+
+Les fournisseurs externes doivent pouvoir être remplacés.
+
+## Principe 7
+
+La conformité, la sécurité et la délivrabilité ne doivent pas être ajoutées à la fin. Elles font partie du produit dès la première version.
+
+---
+
+# 28. Résultat final attendu
+
+À la fin du projet, la plateforme devra pouvoir exécuter le processus suivant :
+
+```text
+Le client configure son entreprise et son offre
+                    ↓
+Il définit son ICP et ses personas
+                    ↓
+Le système trouve ou importe des entreprises
+                    ↓
+Il identifie les décideurs
+                    ↓
+Il enrichit et vérifie les données
+                    ↓
+Il qualifie et segmente les prospects
+                    ↓
+Il crée une campagne multicanale
+                    ↓
+L’IA génère les messages personnalisés
+                    ↓
+Un humain valide les messages importants
+                    ↓
+Le système envoie et relance
+                    ↓
+Il reçoit et analyse les réponses
+                    ↓
+Il arrête les séquences inutiles
+                    ↓
+Il propose ou réserve un rendez-vous
+                    ↓
+Il crée une opportunité commerciale
+                    ↓
+Il suit le pipeline jusqu’à la vente
+                    ↓
+Il mesure les résultats et les coûts
+                    ↓
+Il recommande des optimisations
+```
+
+La plateforme devient ainsi un véritable système de **Revenue Operations**, et non uniquement un logiciel de collecte de leads ou d’envoi d’emails.

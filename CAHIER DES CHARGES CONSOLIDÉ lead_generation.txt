@@ -1,0 +1,2407 @@
+# CAHIER DES CHARGES CONSOLIDÉ
+
+## Plateforme multiclient de Lead Generation & Sales Automation pilotée par l’IA
+
+---
+
+# Correction de périmètre — modèle commercial
+
+La plateforme n'est pas un SaaS public en libre-service. L'agence négocie et signe ses contrats directement avec ses clients hors plateforme, puis un administrateur autorisé crée manuellement le client, son workspace, ses utilisateurs, ses rôles, ses intégrations et ses quotas.
+
+Sont définitivement hors périmètre : Stripe, checkout, paiement en ligne, facturation automatique, plans tarifaires, abonnements SaaS, essais gratuits, coupons, taxes, cartes bancaires, factures client automatiques, portails de billing, webhooks de paiement, `PaymentProvider`, `BillingProvider` et toute table de paiement.
+
+Les crédits, coûts, quotas et limites conservés concernent uniquement la consommation technique des fournisseurs externes. Ils ne constituent pas un système de paiement ou de facturation client.
+
+---
+
+# 1. Présentation du projet
+
+## 1.1 Nom provisoire
+
+**AI Lead Generation & Sales Operations Platform**
+
+## 1.2 Vision
+
+Construire une plateforme professionnelle permettant à une agence de lead generation ou d’automatisation commerciale de gérer plusieurs clients simultanément depuis un seul système.
+
+La plateforme devra automatiser le processus complet :
+
+```text
+Onboarding du client
+→ compréhension de son marché
+→ construction de son offre
+→ définition de son ICP
+→ définition des buyer personas
+→ recherche des entreprises
+→ recherche des décideurs
+→ enrichissement
+→ vérification
+→ qualification
+→ segmentation
+→ création de campagne
+→ personnalisation des messages
+→ validation humaine
+→ envoi
+→ relances
+→ analyse des réponses
+→ prise de rendez-vous
+→ gestion du pipeline
+→ closing
+→ reporting
+→ optimisation continue
+```
+
+La plateforme ne doit pas être uniquement :
+
+* un scraper ;
+* un outil d’emailing ;
+* un CRM ;
+* un ensemble de workflows Trigger.dev ;
+* une interface d’agents IA.
+
+Elle doit devenir un véritable système de **Lead Operations, Sales Operations et Revenue Operations pour agences B2B**.
+
+---
+
+# 2. Utilisateur principal du système
+
+## 2.1 L’agence
+
+L’agence achète, déploie ou utilise la plateforme.
+
+Elle peut gérer :
+
+* plusieurs clients ;
+* plusieurs utilisateurs internes ;
+* plusieurs offres par client ;
+* plusieurs ICP par client ;
+* plusieurs campagnes ;
+* plusieurs boîtes email ;
+* plusieurs calendriers ;
+* plusieurs pipelines ;
+* plusieurs intégrations ;
+* plusieurs équipes commerciales.
+
+## 2.2 Les clients de l’agence
+
+Chaque client peut disposer de son propre portail.
+
+Un client peut :
+
+* consulter ses campagnes ;
+* consulter ses prospects ;
+* valider des messages ;
+* consulter les réponses ;
+* gérer ses rendez-vous ;
+* suivre son pipeline ;
+* consulter ses résultats ;
+* télécharger ses rapports.
+
+Un client ne doit jamais pouvoir accéder aux données d’un autre client.
+
+## 2.3 Les utilisateurs internes de l’agence
+
+Rôles possibles :
+
+```text
+Agency Owner
+Agency Admin
+Campaign Manager
+Lead Researcher
+Data Enrichment Specialist
+SDR
+Sales Manager
+Sales Representative
+Message Reviewer
+Compliance Reviewer
+Analyst
+Technical Administrator
+```
+
+## 2.4 Les utilisateurs du client
+
+Rôles possibles :
+
+```text
+Client Admin
+Client Sales Manager
+Client Reviewer
+Client Sales Representative
+Client Viewer
+```
+
+---
+
+# 3. Architecture multitenant
+
+## 3.1 Hiérarchie métier
+
+```text
+Plateforme
+└── Agence
+    ├── Membres de l’agence
+    ├── Paramètres globaux
+    ├── Bibliothèque de templates
+    ├── Intégrations partagées
+    └── Clients
+        ├── Utilisateurs clients
+        ├── Offres
+        ├── ICP
+        ├── Personas
+        ├── Entreprises
+        ├── Contacts
+        ├── Campagnes
+        ├── Boîtes email
+        ├── Calendriers
+        ├── Réponses
+        ├── Rendez-vous
+        ├── Pipeline
+        └── Rapports
+```
+
+## 3.2 Isolation des données
+
+Toutes les entités métier doivent être liées à :
+
+```text
+agency_id
+client_id
+```
+
+Certaines entités globales peuvent uniquement contenir :
+
+```text
+agency_id
+```
+
+Exemples :
+
+* utilisateurs internes ;
+* budgets, quotas et coûts techniques de l’agence ;
+* paramètres globaux ;
+* bibliothèque de templates partagés ;
+* quotas ;
+* coûts globaux.
+
+## 3.3 Règle fondamentale
+
+Aucune requête frontend, backend, tâche Trigger.dev ou agent IA ne doit faire confiance directement à un `client_id` transmis par l’utilisateur.
+
+Chaque action doit vérifier :
+
+```text
+l’utilisateur appartient à l’agence ;
+le client appartient à l’agence ;
+l’utilisateur possède le rôle nécessaire ;
+la ressource appartient au client ;
+l’intégration appartient au même client ;
+la campagne appartient au même tenant.
+```
+
+---
+
+# 4. Stack technique finale
+
+## 4.1 Frontend et backend
+
+### Technologie principale
+
+```text
+Next.js
+TypeScript
+React
+```
+
+Next.js contiendra :
+
+* le frontend ;
+* les pages ;
+* les composants ;
+* les Route Handlers ;
+* les Server Actions ;
+* les endpoints internes ;
+* les webhooks légers ;
+* le middleware d’authentification ;
+* les services synchrones.
+
+## 4.2 Base de données et services de données
+
+```text
+Supabase
+```
+
+Supabase fournira :
+
+* PostgreSQL ;
+* Supabase Auth ;
+* Row Level Security ;
+* Supabase Storage ;
+* Supabase Realtime ;
+* fonctions SQL ;
+* migrations ;
+* sauvegardes ;
+* éventuellement des Edge Functions.
+
+## 4.3 Automatisation et traitements asynchrones
+
+```text
+Trigger.dev
+```
+
+Trigger.dev exécutera :
+
+* les tâches longues ;
+* les recherches ;
+* le crawling ;
+* l’enrichissement ;
+* les vérifications ;
+* les traitements IA ;
+* la génération de messages ;
+* les envois ;
+* les relances ;
+* les traitements de réponses ;
+* les synchronisations CRM ;
+* les rapports programmés ;
+* les reprises après erreur.
+
+## 4.4 Déploiement
+
+### Application Next.js
+
+Options possibles :
+
+```text
+Vercel
+Railway
+Render
+Infrastructure Docker
+VPS
+```
+
+### Base de données
+
+```text
+Supabase Cloud
+ou Supabase self-hosted
+```
+
+### Workflows
+
+```text
+Trigger.dev Cloud
+ou Trigger.dev self-hosted
+```
+
+Trigger.dev ne doit pas être considéré comme l’hébergement principal de toute l’application. Il héberge et exécute les tâches et workflows asynchrones.
+
+## 4.5 Services complémentaires
+
+```text
+IA : OpenAI ou couche multi-provider
+Crawling : Firecrawl, Playwright ou autre fournisseur
+Email : Gmail API, Microsoft Graph, Resend ou SMTP
+Calendrier : Google Calendar ou Microsoft Graph
+Monitoring : Sentry, Supabase Logs et Trigger.dev Dashboard
+Analytics interne : SQL, vues matérialisées et dashboards
+Stockage : Supabase Storage
+```
+
+---
+
+# 5. Architecture générale
+
+```text
+Utilisateur
+    │
+    ▼
+Application Next.js
+├── Frontend
+├── Backend
+├── Auth Middleware
+├── Server Actions
+├── Route Handlers
+└── Webhooks
+    │
+    ├───────────────┐
+    ▼               ▼
+Supabase        Trigger.dev
+├── Auth        ├── Research Tasks
+├── Database    ├── Enrichment Tasks
+├── RLS         ├── AI Tasks
+├── Storage     ├── Campaign Tasks
+├── Realtime    ├── Email Tasks
+└── Audit       ├── Reply Tasks
+                ├── CRM Tasks
+                └── Reporting Tasks
+                     │
+                     ▼
+              Services externes
+              ├── IA
+              ├── Crawling
+              ├── Enrichissement
+              ├── Email
+              ├── Calendrier
+              └── CRM
+```
+
+---
+
+# 6. Processus métier complet
+
+## Phase 1 — Création de l’agence
+
+L’agence crée son espace.
+
+Informations :
+
+* nom ;
+* logo ;
+* domaine ;
+* langue ;
+* pays ;
+* fuseau horaire ;
+* adresse ;
+* informations légales ;
+* statut opérationnel ;
+* quotas ;
+* paramètres de sécurité.
+
+## Phase 2 — Ajout d’un client
+
+Un administrateur d'agence autorisé crée manuellement un client. Aucun client ne peut créer son espace par achat, inscription libre-service ou choix d'un plan.
+
+Informations :
+
+* nom commercial ;
+* raison sociale ;
+* site web ;
+* secteur ;
+* pays ;
+* langue ;
+* fuseau horaire ;
+* taille ;
+* description ;
+* logo ;
+* équipe ;
+* objectifs ;
+* outils existants.
+
+Workflow opérationnel :
+
+```text
+Créer le client
+→ créer son workspace
+→ ajouter les utilisateurs
+→ attribuer les rôles
+→ configurer les intégrations
+→ définir les quotas techniques
+→ activer le client
+```
+
+Statuts opérationnels autorisés :
+
+```text
+draft
+onboarding
+active
+paused
+archived
+```
+
+Ces statuts ne représentent jamais un état de paiement.
+
+## Phase 3 — Onboarding commercial du client
+
+Le système collecte :
+
+* services ;
+* produits ;
+* prix ;
+* cas clients ;
+* preuves ;
+* témoignages ;
+* garanties ;
+* objections ;
+* concurrents ;
+* alternatives utilisées ;
+* avantages ;
+* processus de vente ;
+* objectifs ;
+* cibles actuelles ;
+* canaux actuels ;
+* historique des campagnes.
+
+## Phase 4 — Validation du marché et du problème
+
+Le système utilise les skills :
+
+```text
+Mom Test
+Four Steps
+Diagnose
+```
+
+Objectifs :
+
+* comprendre les comportements réels des prospects ;
+* identifier les problèmes récurrents ;
+* vérifier qu’un budget existe ;
+* éviter les hypothèses non validées ;
+* détecter un problème d’offre, de marché ou de canal.
+
+## Phase 5 — Positionnement
+
+Le système utilise :
+
+```text
+Obviously Awesome
+```
+
+Il produit :
+
+* alternatives concurrentes ;
+* capacités uniques ;
+* valeur créée ;
+* meilleurs segments ;
+* catégorie de marché ;
+* proposition de valeur ;
+* éléments différenciateurs.
+
+## Phase 6 — Construction de l’offre
+
+Le système utilise :
+
+```text
+100M Offers
+```
+
+Il structure :
+
+* résultat désiré ;
+* obstacles ;
+* composants de l’offre ;
+* délai ;
+* effort demandé ;
+* preuves ;
+* conditions ;
+* prix ;
+* garanties autorisées ;
+* bonus éventuels ;
+* risques ;
+* objections.
+
+## Phase 7 — Définition de l’ICP
+
+Le système définit :
+
+* pays ;
+* secteur ;
+* sous-secteur ;
+* taille ;
+* chiffre d’affaires ;
+* effectif ;
+* technologies ;
+* maturité ;
+* zone géographique ;
+* budget ;
+* signaux d’intention ;
+* problèmes ;
+* exclusions ;
+* niveau de priorité.
+
+## Phase 8 — Définition des personas
+
+Le système définit :
+
+* poste ;
+* département ;
+* niveau hiérarchique ;
+* responsabilités ;
+* objectifs ;
+* problèmes ;
+* objections ;
+* pouvoir de décision ;
+* rôle dans l’achat ;
+* canal préféré.
+
+## Phase 9 — Plan d’acquisition
+
+Le système utilise :
+
+```text
+100M Leads
+```
+
+Il choisit :
+
+* canal principal ;
+* canal secondaire ;
+* type de campagne ;
+* volume initial ;
+* rythme ;
+* source des leads ;
+* stratégie de referral ;
+* contenu ;
+* lead magnet ;
+* indicateurs de succès.
+
+## Phase 10 — Recherche des entreprises
+
+Le système recherche ou importe :
+
+* entreprises ;
+* domaines ;
+* sites ;
+* secteurs ;
+* localisations ;
+* tailles ;
+* sources ;
+* signaux.
+
+Sources :
+
+* fichiers CSV ;
+* Excel ;
+* Google Sheets ;
+* APIs ;
+* annuaires ;
+* moteurs de recherche ;
+* salons ;
+* sites publics ;
+* bases autorisées.
+
+## Phase 11 — Recherche des décideurs
+
+Le système identifie :
+
+* décideurs ;
+* influenceurs ;
+* utilisateurs ;
+* prescripteurs ;
+* validateurs ;
+* responsables opérationnels.
+
+Données :
+
+* nom ;
+* prénom ;
+* poste ;
+* département ;
+* LinkedIn ;
+* email ;
+* téléphone ;
+* source ;
+* niveau de confiance.
+
+## Phase 12 — Enrichissement
+
+Le système complète :
+
+* taille ;
+* activité ;
+* technologies ;
+* actualités ;
+* recrutements ;
+* croissance ;
+* signaux de besoin ;
+* partenaires ;
+* implantations ;
+* pages importantes ;
+* résumé ;
+* problèmes potentiels.
+
+Chaque donnée doit être classée :
+
+```text
+Fait confirmé
+Fait extrait
+Estimation
+Hypothèse
+Information non vérifiée
+```
+
+## Phase 13 — Vérification
+
+Le système vérifie :
+
+* domaine ;
+* email ;
+* téléphone ;
+* format ;
+* enregistrement MX ;
+* statut de l’adresse ;
+* duplications ;
+* fraîcheur ;
+* source.
+
+Statuts d’email :
+
+```text
+Valid
+Risky
+Catch-all
+Unknown
+Invalid
+Disposable
+Role-based
+Bounced
+Suppressed
+Unsubscribed
+```
+
+## Phase 14 — Qualification
+
+Scores :
+
+```text
+Fit Score
+Intent Score
+Data Quality Score
+Engagement Score
+```
+
+Exemple :
+
+```text
+Score total =
+40 % Fit
++ 25 % Intent
++ 20 % Data Quality
++ 15 % Engagement
+```
+
+Le système doit enregistrer :
+
+* score ;
+* raisons ;
+* critères satisfaits ;
+* critères absents ;
+* risques ;
+* confiance ;
+* version du scoring ;
+* prochaine action.
+
+## Phase 15 — Segmentation
+
+Segments :
+
+* secteur ;
+* pays ;
+* taille ;
+* persona ;
+* problème ;
+* offre ;
+* score ;
+* canal ;
+* langue ;
+* niveau d’intention ;
+* maturité.
+
+## Phase 16 — Construction de campagne
+
+Une campagne contient :
+
+* client ;
+* offre ;
+* ICP ;
+* segment ;
+* objectif ;
+* canal ;
+* comptes d’envoi ;
+* séquence ;
+* templates ;
+* règles d’arrêt ;
+* limites ;
+* horaires ;
+* dates ;
+* test A/B ;
+* métriques.
+
+## Phase 17 — Génération des messages
+
+Le système utilise :
+
+```text
+StoryBrand
+Made to Stick
+Obviously Awesome
+100M Offers
+```
+
+Structure recommandée :
+
+```text
+Observation réelle
+→ problème pertinent
+→ résultat proposé
+→ élément de crédibilité
+→ appel à l’action simple
+```
+
+## Phase 18 — Validation humaine
+
+Modes :
+
+```text
+Manuel
+Semi-automatique
+Automatique contrôlé
+```
+
+L’utilisateur peut :
+
+* approuver ;
+* modifier ;
+* rejeter ;
+* régénérer ;
+* changer de contact ;
+* changer de séquence ;
+* envoyer un test ;
+* exclure le prospect.
+
+## Phase 19 — Envoi
+
+Le moteur doit gérer :
+
+* plusieurs clients ;
+* plusieurs domaines ;
+* plusieurs boîtes ;
+* quotas ;
+* horaires ;
+* fuseaux ;
+* queues ;
+* retries ;
+* idempotence ;
+* rebonds ;
+* désabonnements ;
+* réponses ;
+* pauses.
+
+## Phase 20 — Relances
+
+Exemple :
+
+```text
+Jour 0 : email initial
+Jour 3 : relance 1
+Jour 7 : relance 2
+Jour 14 : relance finale
+```
+
+Arrêt automatique si :
+
+* réponse ;
+* désabonnement ;
+* rebond ;
+* plainte ;
+* réservation ;
+* blacklist ;
+* campagne arrêtée ;
+* intégration déconnectée.
+
+## Phase 21 — Analyse des réponses
+
+Catégories :
+
+```text
+Intérêt positif
+Demande d’information
+Rendez-vous demandé
+Intéressé plus tard
+Mauvais contact
+Redirection
+Pas intéressé
+Objection
+Désabonnement
+Absence du bureau
+Réponse automatique
+Client existant
+Concurrent
+Spam
+Réponse ambiguë
+```
+
+## Phase 22 — Rendez-vous
+
+Le système doit :
+
+* consulter les disponibilités ;
+* proposer des créneaux ;
+* gérer les fuseaux ;
+* ajouter un lien de visioconférence ;
+* envoyer les confirmations ;
+* gérer les rappels ;
+* reprogrammer ;
+* synchroniser avec le CRM.
+
+## Phase 23 — Discovery call et vente
+
+Le système utilise :
+
+```text
+SPIN Selling
+```
+
+Il prépare :
+
+* questions Situation ;
+* questions Problème ;
+* questions Implication ;
+* questions Need-Payoff ;
+* objections ;
+* informations manquantes ;
+* prochaine étape.
+
+## Phase 24 — Pipeline commercial
+
+Étapes :
+
+```text
+New Lead
+Qualified
+Contacted
+Replied
+Meeting Booked
+Discovery Completed
+Opportunity
+Proposal Sent
+Negotiation
+Won
+Lost
+Nurturing
+Disqualified
+```
+
+## Phase 25 — Analytics et optimisation
+
+Le système analyse :
+
+* qualité des listes ;
+* performance des messages ;
+* performance des segments ;
+* taux de réponse ;
+* taux de rendez-vous ;
+* conversions ;
+* coûts ;
+* marge ;
+* performance des fournisseurs ;
+* performance des agents.
+
+Le skill Diagnose identifie ensuite la cause probable des mauvaises performances.
+
+---
+
+# 7. Gestion des dix skills commerciaux
+
+Les dix skills sont conservés, mais ils doivent être adaptés au fonctionnement réel de la plateforme.
+
+Le catalogue indique notamment que Diagnose sert à distinguer un problème de ciblage, d’offre, de message ou de canal, tandis que Mom Test sert à identifier des besoins réels à partir des comportements passés.
+
+## 7.1 Skill Diagnose
+
+### À conserver
+
+* analyse des problèmes commerciaux ;
+* distinction ciblage, offre, message, canal et prix ;
+* recommandation du skill suivant ;
+* proposition d’une action.
+
+### À modifier
+
+Ajouter les causes techniques :
+
+* taux de rebond élevé ;
+* domaine mal configuré ;
+* email invalide ;
+* mauvaise réputation ;
+* mauvais horaire ;
+* séquence trop agressive ;
+* données incomplètes ;
+* intégration déconnectée ;
+* queue Trigger.dev bloquée ;
+* problème de qualification ;
+* faible qualité de personnalisation.
+
+### Sortie obligatoire
+
+```json
+{
+  "diagnosis": "",
+  "probableCauses": [],
+  "confidence": 0,
+  "recommendedSkill": "",
+  "recommendedActions": [],
+  "requiredEvidence": []
+}
+```
+
+### Agent utilisateur
+
+```text
+Analytics Agent
+Campaign Optimization Agent
+Orchestrator Agent
+```
+
+---
+
+## 7.2 Skill Mom Test
+
+### À conserver
+
+* questions non biaisées ;
+* priorité aux comportements passés ;
+* détection des compliments sans engagement ;
+* validation du problème ;
+* validation du budget.
+
+### À modifier
+
+Le skill doit produire :
+
+* guide d’entretien ;
+* questions par persona ;
+* grille de prise de notes ;
+* signaux de douleur ;
+* signaux de budget ;
+* signaux d’urgence ;
+* critères à ajouter à l’ICP ;
+* critères à ajouter au scoring.
+
+### Ne pas utiliser pour
+
+* chaque lead ;
+* la génération automatique des emails ;
+* la qualification technique.
+
+### Agent utilisateur
+
+```text
+Customer Research Agent
+Onboarding Agent
+ICP Agent
+```
+
+---
+
+## 7.3 Skill Four Steps
+
+### À conserver
+
+* découverte client ;
+* validation client ;
+* validation du processus de vente ;
+* type de marché ;
+* recherche des premiers clients.
+
+### À modifier
+
+Le skill doit déterminer :
+
+```text
+Étape actuelle du client
+Hypothèses non validées
+Preuves disponibles
+Prochain test
+Critère de validation
+Risque de développer trop tôt
+```
+
+### Agent utilisateur
+
+```text
+Strategy Agent
+Onboarding Agent
+Product Validation Agent
+```
+
+---
+
+## 7.4 Skill Lean Startup
+
+### À conserver
+
+* Build–Measure–Learn ;
+* MVP ;
+* tests ;
+* métriques actionnables ;
+* décision de continuer ou pivoter.
+
+### À modifier
+
+Chaque recommandation doit produire :
+
+```text
+Hypothèse
+Fonctionnalité minimale
+Métrique principale
+Métrique de sécurité
+Taille de l’échantillon
+Durée
+Critère de succès
+Décision possible
+Instrumentation nécessaire
+```
+
+### Utilisation principale
+
+Ce skill doit guider le développement de la plateforme et les expériences commerciales des clients.
+
+### Agent utilisateur
+
+```text
+Product Agent
+Experiment Agent
+Codex Development Agent
+```
+
+---
+
+## 7.5 Skill Obviously Awesome
+
+### À conserver
+
+* alternatives concurrentes ;
+* capacités uniques ;
+* valeur ;
+* meilleurs segments ;
+* catégorie de marché.
+
+### À modifier
+
+La sortie doit être structurée et enregistrable dans Supabase :
+
+```text
+competitive_alternatives
+unique_capabilities
+customer_value
+best_fit_segments
+market_category
+proof_points
+positioning_statement
+excluded_segments
+```
+
+Le skill ne doit pas inventer de différenciation non démontrée.
+
+### Agent utilisateur
+
+```text
+Positioning Agent
+ICP Agent
+Personalization Agent
+Campaign Agent
+```
+
+---
+
+## 7.6 Skill 100M Offers
+
+### À conserver
+
+* résultat désiré ;
+* probabilité de réussite ;
+* délai ;
+* réduction de l’effort ;
+* obstacles ;
+* preuves ;
+* bonus ;
+* garanties.
+
+### À modifier
+
+Le skill doit distinguer :
+
+```text
+Promesse confirmée
+Promesse conditionnelle
+Preuve disponible
+Preuve manquante
+Hypothèse
+Garantie autorisée
+Garantie non autorisée
+```
+
+Il ne doit jamais inventer :
+
+* témoignage ;
+* taux de réussite ;
+* résultat garanti ;
+* délai non confirmé ;
+* économie chiffrée sans source.
+
+### Agent utilisateur
+
+```text
+Offer Agent
+Onboarding Agent
+Personalization Agent
+Sales Assistant Agent
+```
+
+---
+
+## 7.7 Skill 100M Leads
+
+### À conserver
+
+* choix du canal ;
+* stratégie de prospection ;
+* lead magnets ;
+* referrals ;
+* acquisition gratuite et payante ;
+* métriques ;
+* maîtrise progressive des canaux.
+
+### À modifier
+
+Il doit produire un plan exploitable :
+
+```text
+Canal principal
+Canal secondaire
+Segment
+Source des leads
+Volume initial
+Cadence
+Budget
+Durée du test
+Lead magnet
+Objectif
+Métriques
+Règles d’arrêt
+```
+
+Il ne doit pas réaliser directement :
+
+* scraping ;
+* enrichment ;
+* vérification ;
+* envoi.
+
+Ces tâches appartiennent aux agents opérationnels.
+
+### Agent utilisateur
+
+```text
+Acquisition Strategy Agent
+Campaign Agent
+Orchestrator Agent
+```
+
+---
+
+## 7.8 Skill SPIN Selling
+
+### À conserver
+
+* Situation ;
+* Problème ;
+* Implication ;
+* Need-Payoff ;
+* transformation d’un besoin implicite en besoin explicite ;
+* prochaine action.
+
+### À modifier
+
+Le skill doit utiliser :
+
+* informations du prospect ;
+* historique des emails ;
+* réponses ;
+* données CRM ;
+* offre du client ;
+* objections précédentes ;
+* étape du pipeline.
+
+Sortie :
+
+```text
+Résumé du prospect
+Informations connues
+Informations manquantes
+Questions SPIN
+Objections probables
+Preuves à présenter
+Objectif du rendez-vous
+Prochaine étape souhaitée
+```
+
+### Agent utilisateur
+
+```text
+Sales Assistant Agent
+Meeting Preparation Agent
+Opportunity Agent
+```
+
+---
+
+## 7.9 Skill StoryBrand
+
+### À conserver
+
+* prospect comme héros ;
+* problème clair ;
+* entreprise comme guide ;
+* plan simple ;
+* appel à l’action.
+
+### À modifier
+
+Pour les cold emails, ajouter les contraintes :
+
+```text
+50 à 120 mots
+Une idée principale
+Une observation vérifiable
+Un seul appel à l’action
+Pas de long récit
+Pas de fausse personnalisation
+Pas de formulation manipulatrice
+```
+
+Le framework peut être utilisé plus librement pour :
+
+* landing pages ;
+* propositions ;
+* pages de vente ;
+* présentations.
+
+### Agent utilisateur
+
+```text
+Personalization Agent
+Content Agent
+Campaign Agent
+```
+
+---
+
+## 7.10 Skill Made to Stick
+
+### À conserver
+
+* simplicité ;
+* concret ;
+* crédibilité ;
+* mémorisation ;
+* exemples ;
+* qualité des objets ;
+* variantes A/B.
+
+### À modifier
+
+Le skill doit devenir principalement un reviewer.
+
+Il doit attribuer des scores :
+
+```text
+Clarté
+Concrétude
+Crédibilité
+Pertinence
+Longueur
+Originalité
+Risque d’exagération
+Qualité du CTA
+```
+
+Il doit rejeter les messages :
+
+* vagues ;
+* abstraits ;
+* trop longs ;
+* non crédibles ;
+* remplis de jargon ;
+* contenant des affirmations non vérifiées.
+
+### Agent utilisateur
+
+```text
+Message Quality Agent
+Personalization Reviewer
+Campaign Reviewer
+```
+
+---
+
+# 8. Pipeline d’utilisation des skills
+
+```text
+Onboarding
+    │
+    ├── Mom Test
+    ├── Four Steps
+    └── Diagnose
+           │
+           ▼
+Positionnement
+    │
+    └── Obviously Awesome
+           │
+           ▼
+Construction de l’offre
+    │
+    └── 100M Offers
+           │
+           ▼
+ICP et personas
+           │
+           ▼
+Plan d’acquisition
+    │
+    └── 100M Leads
+           │
+           ▼
+Recherche et enrichissement
+           │
+           ▼
+Qualification
+           │
+           ▼
+Messages
+    ├── StoryBrand
+    └── Made to Stick
+           │
+           ▼
+Validation et envoi
+           │
+           ▼
+Réponses et rendez-vous
+    └── SPIN Selling
+           │
+           ▼
+Pipeline et conversion
+           │
+           ▼
+Analytics
+    ├── Diagnose
+    └── Lean Startup
+```
+
+---
+
+# 9. Agents IA
+
+## 9.1 Orchestrator Agent
+
+Responsabilités :
+
+* sélectionner le workflow ;
+* sélectionner les skills ;
+* vérifier les permissions ;
+* vérifier les données ;
+* lancer les tâches ;
+* demander validation ;
+* gérer les erreurs ;
+* générer un rapport.
+
+## 9.2 Onboarding Agent
+
+* analyse le client ;
+* collecte l’offre ;
+* identifie les informations manquantes ;
+* appelle Mom Test, Four Steps et 100M Offers.
+
+## 9.3 Positioning Agent
+
+* utilise Obviously Awesome ;
+* génère le positionnement ;
+* prépare la proposition de valeur ;
+* enregistre la version approuvée.
+
+## 9.4 ICP Agent
+
+* construit l’ICP ;
+* définit les exclusions ;
+* attribue les pondérations ;
+* crée les personas ;
+* propose les critères de scoring.
+
+## 9.5 Acquisition Strategy Agent
+
+* utilise 100M Leads ;
+* choisit les canaux ;
+* définit les tests ;
+* définit les métriques.
+
+## 9.6 Research Agent
+
+* recherche les entreprises ;
+* collecte les sources ;
+* normalise ;
+* déduplique.
+
+## 9.7 Contact Finder Agent
+
+* identifie les décideurs ;
+* classe les rôles ;
+* attribue un niveau de confiance.
+
+## 9.8 Enrichment Agent
+
+* analyse le site ;
+* complète les données ;
+* distingue faits et hypothèses ;
+* détecte les signaux.
+
+## 9.9 Verification Agent
+
+* vérifie les emails ;
+* vérifie les domaines ;
+* marque les données risquées ;
+* bloque les données invalides.
+
+## 9.10 Qualification Agent
+
+* calcule les scores ;
+* explique les résultats ;
+* recommande une action ;
+* versionne le scoring.
+
+## 9.11 Segmentation Agent
+
+* crée les segments ;
+* choisit l’offre ;
+* choisit le message ;
+* choisit le canal.
+
+## 9.12 Personalization Agent
+
+* utilise StoryBrand ;
+* utilise le positionnement ;
+* utilise l’offre ;
+* génère les messages ;
+* cite uniquement les faits disponibles.
+
+## 9.13 Message Quality Agent
+
+* utilise Made to Stick ;
+* vérifie la clarté ;
+* vérifie la longueur ;
+* vérifie la crédibilité ;
+* détecte les inventions.
+
+## 9.14 Compliance Agent
+
+* contrôle les règles ;
+* vérifie les exclusions ;
+* vérifie la finalité ;
+* bloque les campagnes risquées ;
+* contrôle la conservation.
+
+## 9.15 Deliverability Agent
+
+* surveille les rebonds ;
+* surveille les plaintes ;
+* contrôle les volumes ;
+* recommande les pauses ;
+* surveille les domaines.
+
+## 9.16 Outreach Agent
+
+* planifie les envois ;
+* contrôle les comptes ;
+* déclenche Trigger.dev ;
+* applique les règles d’arrêt.
+
+## 9.17 Reply Agent
+
+* classifie les réponses ;
+* extrait l’intention ;
+* arrête la séquence ;
+* propose une réponse ;
+* crée une tâche.
+
+## 9.18 Sales Assistant Agent
+
+* utilise SPIN Selling ;
+* prépare les appels ;
+* résume les prospects ;
+* génère les questions ;
+* recommande la prochaine étape.
+
+## 9.19 Analytics Agent
+
+* mesure les performances ;
+* utilise Diagnose ;
+* identifie les causes ;
+* recommande des expériences Lean Startup.
+
+---
+
+# 10. Skills métier supplémentaires obligatoires
+
+Les dix skills commerciaux ne couvrent pas les opérations techniques.
+
+Créer également :
+
+```text
+icp-builder
+persona-builder
+lead-research
+company-discovery
+contact-finder
+company-enrichment
+contact-enrichment
+email-verification
+data-normalization
+deduplication
+lead-scoring
+segmentation
+campaign-builder
+sequence-builder
+email-personalization
+reply-classification
+meeting-preparation
+crm-pipeline
+deliverability
+compliance
+analytics
+reporting
+```
+
+---
+
+# 11. Skills techniques obligatoires
+
+```text
+nextjs-fullstack-architecture
+nextjs-server-actions
+api-design
+supabase-schema-design
+supabase-auth
+supabase-storage
+supabase-realtime
+supabase-rls
+multitenancy
+tenant-isolation
+rbac
+trigger-dev-tasks
+trigger-dev-workflows
+trigger-dev-queues
+trigger-dev-scheduling
+trigger-dev-retries
+idempotency
+webhook-security
+provider-abstraction
+structured-ai-output
+prompt-security
+logging
+monitoring
+testing
+deployment
+database-migrations
+```
+
+---
+
+# 12. Structure du projet
+
+```text
+lead-sales-platform/
+├── apps/
+│   └── web/
+│       ├── app/
+│       │   ├── (public)/
+│       │   ├── agency/
+│       │   ├── clients/
+│       │   ├── onboarding/
+│       │   ├── offers/
+│       │   ├── icps/
+│       │   ├── personas/
+│       │   ├── companies/
+│       │   ├── contacts/
+│       │   ├── leads/
+│       │   ├── campaigns/
+│       │   ├── inbox/
+│       │   ├── calendar/
+│       │   ├── pipeline/
+│       │   ├── analytics/
+│       │   └── settings/
+│       ├── api/
+│       ├── actions/
+│       ├── components/
+│       ├── hooks/
+│       ├── lib/
+│       └── middleware.ts
+│
+├── packages/
+│   ├── auth/
+│   ├── database/
+│   ├── tenant/
+│   ├── permissions/
+│   ├── ai/
+│   ├── research/
+│   ├── enrichment/
+│   ├── verification/
+│   ├── scoring/
+│   ├── campaigns/
+│   ├── email/
+│   ├── replies/
+│   ├── crm/
+│   ├── analytics/
+│   ├── compliance/
+│   └── ui/
+│
+├── trigger/
+│   ├── research/
+│   ├── enrichment/
+│   ├── verification/
+│   ├── qualification/
+│   ├── campaigns/
+│   ├── replies/
+│   ├── meetings/
+│   ├── crm/
+│   └── reporting/
+│
+├── supabase/
+│   ├── migrations/
+│   ├── functions/
+│   ├── seed.sql
+│   ├── tests/
+│   └── config.toml
+│
+├── .codex/
+│   ├── skills/
+│   │   ├── strategy/
+│   │   ├── sales/
+│   │   ├── lead-operations/
+│   │   ├── platform/
+│   │   └── quality/
+│   ├── agents/
+│   ├── commands/
+│   └── AGENTS.md
+│
+├── tests/
+└── docs/
+```
+
+---
+
+# 13. Modèle de données Supabase
+
+## Tables principales
+
+```text
+agencies
+agency_members
+clients
+client_members
+roles
+permissions
+
+offers
+offer_proofs
+offer_objections
+positioning_profiles
+icps
+icp_criteria
+personas
+
+companies
+company_sources
+contacts
+contact_sources
+leads
+lead_scores
+segments
+segment_members
+
+campaigns
+campaign_segments
+sequences
+sequence_steps
+message_templates
+generated_messages
+
+sender_domains
+sender_accounts
+outbound_messages
+delivery_events
+bounces
+replies
+reply_classifications
+suppression_entries
+
+calendars
+meetings
+pipelines
+pipeline_stages
+opportunities
+tasks
+notes
+
+integrations
+integration_credentials
+webhooks
+trigger_runs
+ai_executions
+usage_records
+cost_records
+audit_logs
+notifications
+reports
+```
+
+## Colonnes de sécurité
+
+Presque toutes les tables métier doivent contenir :
+
+```text
+id
+agency_id
+client_id
+created_by
+created_at
+updated_at
+```
+
+## Colonnes de traçabilité des données
+
+```text
+source_type
+source_url
+source_provider
+collected_at
+verified_at
+confidence_score
+verification_status
+data_classification
+```
+
+---
+
+# 14. RLS Supabase
+
+RLS doit être activé sur toutes les tables sensibles.
+
+Règles :
+
+```text
+Un membre de l’agence voit les ressources de son agence.
+
+Un utilisateur client voit uniquement les ressources des clients auxquels il est affecté.
+
+Un reviewer peut approuver mais pas administrer.
+
+Un viewer peut lire mais pas modifier.
+
+Un agent backend utilisant une clé de service doit refaire les contrôles de tenant dans le code.
+```
+
+Tests obligatoires :
+
+* Agence A ne voit pas Agence B ;
+* Client A ne voit pas Client B ;
+* reviewer ne peut pas supprimer ;
+* viewer ne peut pas envoyer ;
+* utilisateur désactivé perd immédiatement l’accès ;
+* tâche Trigger.dev ne peut pas traiter une ressource d’un autre tenant.
+
+---
+
+# 15. Tâches Trigger.dev
+
+```text
+research.discoverCompanies
+research.crawlCompany
+research.findContacts
+
+enrichment.enrichCompany
+enrichment.enrichContact
+
+verification.verifyEmail
+verification.validateDomain
+
+qualification.calculateFitScore
+qualification.calculateIntentScore
+qualification.qualifyLead
+
+campaign.generateMessage
+campaign.reviewMessage
+campaign.prepareCampaign
+campaign.sendMessage
+campaign.scheduleFollowup
+campaign.stopSequence
+
+reply.processInbound
+reply.classifyReply
+reply.createTask
+
+meeting.prepareMeeting
+meeting.syncCalendar
+
+crm.createOpportunity
+crm.updatePipeline
+crm.syncExternalCrm
+
+report.dailyClientReport
+report.weeklyAgencyReport
+report.performanceAnalysis
+```
+
+Chaque payload doit contenir :
+
+```ts
+{
+  agencyId: string;
+  clientId: string;
+  actorId?: string;
+  resourceId: string;
+  idempotencyKey: string;
+}
+```
+
+---
+
+# 16. Idempotence
+
+Aucune tâche relancée ne doit provoquer :
+
+* double email ;
+* double enrichissement facturé ;
+* double rendez-vous ;
+* double opportunité ;
+* double rapport.
+
+Chaque opération critique doit utiliser :
+
+```text
+idempotency_key
+execution_status
+attempt_count
+last_error
+completed_at
+```
+
+---
+
+# 17. Files d’attente et limites
+
+Définir des limites :
+
+```text
+par plateforme
+par agence
+par client
+par campagne
+par domaine
+par compte email
+par fournisseur
+par type de tâche
+```
+
+Un gros client ne doit pas bloquer les autres clients.
+
+---
+
+# 18. Gestion des coûts
+
+Chaque opération externe doit créer un enregistrement :
+
+```text
+agency_id
+client_id
+provider
+operation
+quantity
+unit_cost
+total_cost
+trigger_run_id
+created_at
+```
+
+Suivre :
+
+* tokens IA ;
+* crawling ;
+* enrichissement ;
+* vérification ;
+* emails ;
+* Trigger.dev ;
+* stockage ;
+* CRM ;
+* SMS éventuels.
+
+Calculs :
+
+```text
+Coût par lead
+Coût par lead qualifié
+Coût par réponse
+Coût par rendez-vous
+Coût par opportunité
+Coût par vente
+Marge par client
+ROI
+```
+
+---
+
+# 19. Dashboards
+
+## Dashboard agence
+
+* clients actifs ;
+* campagnes actives ;
+* leads générés ;
+* rendez-vous ;
+* opportunités ;
+* ventes ;
+* coûts ;
+* marge ;
+* erreurs ;
+* intégrations déconnectées ;
+* messages à valider ;
+* campagnes à risque.
+
+## Dashboard client
+
+* campagnes ;
+* leads ;
+* réponses ;
+* rendez-vous ;
+* pipeline ;
+* performances ;
+* documents ;
+* rapports.
+
+## Centre opérationnel
+
+* workflows échoués ;
+* queues ;
+* taux de rebond ;
+* plaintes ;
+* quotas ;
+* tâches bloquées ;
+* réponses urgentes ;
+* campagnes en pause.
+
+---
+
+# 20. Délivrabilité
+
+Fonctions obligatoires :
+
+* SPF ;
+* DKIM ;
+* DMARC ;
+* domaines d’envoi séparés ;
+* comptes séparés par client ;
+* gestion des rebonds ;
+* gestion des plaintes ;
+* listes d’exclusion ;
+* surveillance de réputation ;
+* limites journalières ;
+* pause automatique ;
+* séparation transactionnel/prospection.
+
+Une campagne ne peut pas démarrer si :
+
+* le domaine n’est pas configuré ;
+* le compte est déconnecté ;
+* le taux de rebond dépasse le seuil ;
+* la liste contient trop d’adresses risquées ;
+* la conformité n’est pas validée.
+
+---
+
+# 21. Conformité
+
+Le système doit gérer :
+
+* finalité ;
+* source des données ;
+* date de collecte ;
+* opposition ;
+* suppression ;
+* rétention ;
+* export ;
+* consentement lorsque requis ;
+* base juridique ;
+* pays ;
+* canal ;
+* type B2B ou B2C ;
+* blacklist ;
+* suppression globale.
+
+La validation juridique finale dépendra des pays et canaux utilisés.
+
+---
+
+# 22. Sécurité
+
+* MFA ;
+* RBAC ;
+* RLS ;
+* secrets protégés ;
+* chiffrement ;
+* webhooks signés ;
+* logs d’audit ;
+* limitation de débit ;
+* protection CSRF ;
+* protection XSS ;
+* validation des entrées ;
+* scans de dépendances ;
+* sauvegardes ;
+* restauration ;
+* isolation des tenants ;
+* permissions minimales ;
+* suppression contrôlée.
+
+## Sécurité IA
+
+* protection contre la prompt injection ;
+* validation des sorties ;
+* structured outputs ;
+* outils limités ;
+* confirmation pour actions critiques ;
+* contrôle des données sensibles ;
+* budgets d’exécution ;
+* journalisation ;
+* versionnement des prompts.
+
+---
+
+# 23. Tests
+
+## Tests unitaires
+
+* scoring ;
+* permissions ;
+* règles de campagne ;
+* classification ;
+* déduplication ;
+* validation.
+
+## Tests d’intégration
+
+* Supabase ;
+* email ;
+* calendrier ;
+* Trigger.dev ;
+* CRM ;
+* IA ;
+* webhooks.
+
+## Tests RLS
+
+* isolation agence ;
+* isolation client ;
+* permissions ;
+* lecture ;
+* écriture ;
+* suppression.
+
+## Tests end-to-end
+
+```text
+Créer agence
+→ créer client
+→ créer offre
+→ créer ICP
+→ importer leads
+→ enrichir
+→ vérifier
+→ scorer
+→ créer campagne
+→ générer message
+→ approuver
+→ envoyer test
+→ simuler réponse
+→ classer
+→ réserver rendez-vous
+→ créer opportunité
+→ afficher rapport
+```
+
+## Tests IA
+
+* extraction exacte ;
+* absence d’invention ;
+* classification ;
+* respect du schéma ;
+* qualité du message ;
+* résistance à la prompt injection ;
+* conformité.
+
+---
+
+# 24. MVP
+
+## Inclus
+
+```text
+Authentification
+Agences
+Clients
+Rôles
+RLS
+Offres
+Positionnement
+ICP
+Personas
+Import CSV
+Entreprises
+Contacts
+Enrichissement simple
+Vérification email
+Scoring
+Segmentation
+Campagnes email
+Séquences
+Génération IA
+Validation humaine
+Envoi contrôlé
+Relances
+Réponses
+Classification
+Rendez-vous
+Pipeline simple
+Dashboard
+Rapports
+Coûts
+Audit
+```
+
+## Hors MVP
+
+```text
+Automatisation LinkedIn complète
+Téléphonie
+SMS
+WhatsApp
+Application mobile
+Paiement en ligne et facturation client automatique, définitivement hors périmètre
+Marketplace
+Nombreux CRM
+Nombreux fournisseurs
+Prédiction avancée
+Voice agents
+```
+
+---
+
+# 25. Roadmap
+
+## Étape 0 — Cadrage
+
+* architecture ;
+* backlog ;
+* modèle de données ;
+* wireframes ;
+* règles multitenant ;
+* sécurité ;
+* périmètre MVP ;
+* confirmation du modèle d'agence hors plateforme et exclusion définitive de tout paiement en ligne.
+
+## Étape 1 — Fondation
+
+* Next.js ;
+* Supabase ;
+* Auth ;
+* agences ;
+* clients ;
+* création manuelle et activation opérationnelle des espaces clients ;
+* rôles ;
+* RLS ;
+* CI/CD ;
+* logs.
+
+## Étape 2 — Stratégie client
+
+* onboarding ;
+* offres ;
+* positionnement ;
+* ICP ;
+* personas ;
+* intégration des skills commerciaux.
+
+## Étape 3 — Données
+
+* imports ;
+* entreprises ;
+* contacts ;
+* sources ;
+* déduplication ;
+* enrichissement ;
+* vérification.
+
+## Étape 4 — Qualification
+
+* scoring ;
+* segmentation ;
+* recommandations.
+
+## Étape 5 — Campagnes
+
+* campagnes ;
+* séquences ;
+* génération ;
+* validation ;
+* templates.
+
+## Étape 6 — Trigger.dev
+
+* queues ;
+* retries ;
+* scheduling ;
+* idempotence ;
+* suivi des exécutions.
+
+## Étape 7 — Envoi et réponses
+
+* comptes email ;
+* délivrabilité ;
+* webhooks ;
+* classification ;
+* relances.
+
+## Étape 8 — CRM
+
+* rendez-vous ;
+* pipeline ;
+* tâches ;
+* opportunités.
+
+## Étape 9 — Analytics
+
+* dashboards ;
+* coûts ;
+* ROI ;
+* Diagnose ;
+* expérimentations.
+
+## Étape 10 — Industrialisation
+
+* tests de charge ;
+* sécurité ;
+* conformité ;
+* monitoring ;
+* documentation ;
+* déploiement production.
+
+---
+
+# 26. Critères d’acceptation
+
+Le produit est accepté lorsqu’une agence peut :
+
+1. créer son espace ;
+2. inviter son équipe ;
+3. créer plusieurs clients ;
+4. isoler totalement leurs données ;
+5. configurer les offres ;
+6. construire les ICP ;
+7. importer ou rechercher les prospects ;
+8. enrichir et vérifier les données ;
+9. scorer les leads ;
+10. segmenter ;
+11. créer les campagnes ;
+12. générer des messages ;
+13. valider les messages ;
+14. envoyer avec plusieurs comptes ;
+15. lancer des relances ;
+16. arrêter les séquences après réponse ;
+17. classifier les réponses ;
+18. proposer un rendez-vous ;
+19. créer une opportunité ;
+20. suivre le pipeline ;
+21. consulter les coûts ;
+22. consulter la marge par client ;
+23. générer des rapports ;
+24. diagnostiquer une campagne ;
+25. prouver qui a exécuté chaque action.
+
+---
+
+# 27. Principes obligatoires
+
+## Principe 1
+
+```text
+L’IA analyse, extrait, recommande et génère.
+Le code valide, sécurise et exécute.
+```
+
+## Principe 2
+
+Aucune action critique ne doit dépendre uniquement d’une décision probabiliste.
+
+## Principe 3
+
+Chaque donnée externe doit conserver sa source.
+
+## Principe 4
+
+Chaque client doit être isolé.
+
+## Principe 5
+
+Chaque action importante doit être auditée.
+
+## Principe 6
+
+Chaque tâche doit être idempotente.
+
+## Principe 7
+
+Chaque fournisseur doit être remplaçable.
+
+## Principe 8
+
+Les skills commerciaux ne doivent pas remplacer les services métier.
+
+## Principe 9
+
+Les prompts ne doivent pas contenir la logique critique du produit.
+
+## Principe 10
+
+La conformité, la sécurité et la délivrabilité sont des fonctions principales du produit.
+
+---
+
+# 28. Résultat final attendu
+
+```text
+L’agence crée plusieurs clients
+                    ↓
+Chaque client configure son entreprise
+                    ↓
+Les skills analysent le marché et l’offre
+                    ↓
+La plateforme crée l’ICP et les personas
+                    ↓
+Elle recherche et enrichit les prospects
+                    ↓
+Elle vérifie et qualifie les données
+                    ↓
+Elle segmente les leads
+                    ↓
+Elle génère les campagnes
+                    ↓
+Elle personnalise les messages
+                    ↓
+Elle valide les actions sensibles
+                    ↓
+Trigger.dev exécute les tâches
+                    ↓
+Les emails sont envoyés et relancés
+                    ↓
+Les réponses sont analysées
+                    ↓
+Les rendez-vous sont organisés
+                    ↓
+Les opportunités sont suivies
+                    ↓
+Les ventes, coûts et marges sont mesurés
+                    ↓
+Diagnose identifie les problèmes
+                    ↓
+Lean Startup définit les prochaines expériences
+```
+
+Le résultat final est une plateforme multitenant complète permettant à une agence B2B de gérer l’acquisition, la prospection et la vente de plusieurs clients depuis une seule interface, avec une orchestration durable, une intelligence commerciale structurée et une isolation stricte des données.

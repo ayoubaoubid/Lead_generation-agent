@@ -1,0 +1,10 @@
+node_modules/
+.next/
+coverage/
+package-lock.json
+founder-playbook/
+.agents/
+docs/
+AGENTS.md
+CODEX.md
+*.txt

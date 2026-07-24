@@ -229,7 +229,7 @@ export type FormFieldProps = {
   children: ReactNode;
   htmlFor?: string;
   hint?: string;
-  error?: string;
+  error?: string | undefined;
   optional?: boolean;
 };
 

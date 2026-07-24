@@ -1,0 +1,17 @@
+{
+  "skill_name": "mom-test",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Prépare un entretien pour des responsables commerciaux qui disent perdre du temps avec des leads mal qualifiés. Les questions doivent porter sur leurs comportements passés, leurs dépenses et l’urgence.",
+      "expected_output": "Guide non biaisé, grille de notes et signaux de douleur, budget et urgence.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Nous avons seulement des compliments sur le produit et aucune preuve d’achat. Construis les questions qui permettent de distinguer intérêt poli et engagement réel.",
+      "expected_output": "Questions centrées sur actions concrètes sans inventer de validation.",
+      "files": []
+    }
+  ]
+}

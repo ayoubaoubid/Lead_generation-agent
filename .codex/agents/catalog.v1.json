@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "agents": [
+    {
+      "id": "orchestrator-agent",
+      "version": "1.0.0",
+      "allowedSkills": [
+        "diagnose",
+        "four-steps",
+        "lean-startup",
+        "obviously-awesome",
+        "100m-offers",
+        "100m-leads"
+      ]
+    },
+    {
+      "id": "onboarding-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["mom-test", "four-steps", "100m-offers"]
+    },
+    {
+      "id": "strategy-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["diagnose", "four-steps", "lean-startup"]
+    },
+    {
+      "id": "positioning-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["obviously-awesome"]
+    },
+    {
+      "id": "icp-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["mom-test", "obviously-awesome"]
+    },
+    {
+      "id": "acquisition-strategy-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["100m-leads", "lean-startup", "diagnose"]
+    },
+    {
+      "id": "personalization-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["storybrand", "obviously-awesome", "100m-offers"]
+    },
+    {
+      "id": "message-quality-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["made-to-stick"]
+    },
+    {
+      "id": "sales-assistant-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["spin-selling", "100m-offers"]
+    },
+    {
+      "id": "analytics-agent",
+      "version": "1.0.0",
+      "allowedSkills": ["diagnose", "lean-startup"]
+    }
+  ]
+}

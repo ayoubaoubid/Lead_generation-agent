@@ -1,0 +1,17 @@
+{
+  "skill_name": "obviously-awesome",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "À partir d’alternatives concurrentes et de trois capacités démontrées, prépare un positionnement pour les agences B2B et indique les segments à exclure.",
+      "expected_output": "Positionnement structuré reliant capacités, valeur, segment, catégorie et preuves.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "L’équipe affirme être « la plus précise du marché » sans étude comparative. Prépare le positionnement sans reprendre cette différenciation comme un fait.",
+      "expected_output": "Affirmation reclassée comme non vérifiée et preuve manquante explicite.",
+      "files": []
+    }
+  ]
+}

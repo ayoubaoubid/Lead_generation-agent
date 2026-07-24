@@ -1,0 +1,17 @@
+{
+  "skill_name": "100m-leads",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Prépare un test d’acquisition de 21 jours pour un segment de cabinets de conseil avec email et LinkedIn disponibles, un petit budget technique et des règles d’arrêt.",
+      "expected_output": "Plan borné avec canaux, volume, cadence, budget, métriques et stop rules.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Choisis un canal initial alors qu’aucune performance historique n’est disponible. Toutes les estimations doivent rester des hypothèses et aucun scraping ne doit être lancé.",
+      "expected_output": "Plan prudent distinguant hypothèses et faits, sans opération externe.",
+      "files": []
+    }
+  ]
+}

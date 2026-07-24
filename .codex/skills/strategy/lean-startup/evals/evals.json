@@ -1,0 +1,17 @@
+{
+  "skill_name": "lean-startup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Nous pensons qu’un audit gratuit augmente les rendez-vous. Conçois un test de deux semaines avec métrique principale, sécurité, instrumentation et décision possible.",
+      "expected_output": "Expérience Build–Measure–Learn minimale, bornée et mesurable.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Transforme l’hypothèse « les PME veulent plus de personnalisation » en expérience falsifiable sans appeler de fournisseur.",
+      "expected_output": "Hypothèse reformulée, action minimale et critère décidé avant exécution.",
+      "files": []
+    }
+  ]
+}

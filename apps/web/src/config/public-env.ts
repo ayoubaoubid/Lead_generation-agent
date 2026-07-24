@@ -18,3 +18,15 @@ export const publicEnv = parsePublicEnv({
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 });
+
+export type SupabasePublicConfig = Readonly<{
+  url: string;
+  publishableKey: string;
+}>;
+
+export function getSupabasePublicConfig(): SupabasePublicConfig | null {
+  const url = publicEnv.NEXT_PUBLIC_SUPABASE_URL;
+  const publishableKey = publicEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  return url && publishableKey ? { publishableKey, url } : null;
+}

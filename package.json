@@ -20,10 +20,21 @@
     "typecheck": "npm run typecheck --workspace=@lead-generation/web",
     "test": "npm run test --workspace=@lead-generation/web",
     "test:watch": "npm run test:watch --workspace=@lead-generation/web",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "db:reset": "supabase db reset --local",
+    "db:test": "supabase test db --local supabase/tests/database",
+    "db:types": "supabase gen types --local --lang typescript --schema public > apps/web/src/types/database.generated.ts",
+    "trigger:dev": "trigger dev",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "prettier": "3.9.5"
+    "prettier": "3.9.5",
+    "supabase": "2.109.1",
+    "trigger.dev": "^4.5.7"
+  },
+  "dependencies": {
+    "@trigger.dev/sdk": "^4.5.7"
   }
 }

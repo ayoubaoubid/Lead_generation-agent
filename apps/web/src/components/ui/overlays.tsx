@@ -137,15 +137,18 @@ export function Drawer({
   children,
   description,
   footer,
+  side = "right",
   title,
   trigger,
-}: DialogShellProps) {
+}: DialogShellProps & { side?: "left" | "right" }) {
   return (
     <DialogPrimitive.Root>
       <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="ui-overlay" />
-        <DialogPrimitive.Content className="ui-drawer">
+        <DialogPrimitive.Content
+          className={cn("ui-drawer", `ui-drawer--${side}`)}
+        >
           <DialogHeader
             title={title}
             {...(description ? { description } : {})}

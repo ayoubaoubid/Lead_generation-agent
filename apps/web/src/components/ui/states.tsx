@@ -3,12 +3,17 @@ import type { ReactNode } from "react";
 
 import { Button } from "./button";
 
-type StateProps = { title: string; description: string; action?: ReactNode };
-export function EmptyState({ action, description, title }: StateProps) {
+type StateProps = {
+  title: string;
+  description: string;
+  action?: ReactNode;
+  icon?: ReactNode;
+};
+export function EmptyState({ action, description, icon, title }: StateProps) {
   return (
     <div className="ui-state">
       <span className="ui-state-icon">
-        <Inbox aria-hidden size={20} />
+        {icon ?? <Inbox aria-hidden size={20} />}
       </span>
       <div>
         <h3>{title}</h3>

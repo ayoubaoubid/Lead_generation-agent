@@ -1,0 +1,17 @@
+{
+  "skill_name": "four-steps",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Le client déclare être prêt à scaler, mais il n’a que trois entretiens et aucun processus de vente reproductible. Détermine l’étape prouvée et le prochain test.",
+      "expected_output": "Étape fondée sur les preuves, risque de scale prématuré et critère de validation.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Classe les hypothèses et preuves de cet onboarding, puis propose une expérience minimale avant tout développement.",
+      "expected_output": "Hypothèses, preuves, test et critère structurés sans lancer l’expérience.",
+      "files": []
+    }
+  ]
+}

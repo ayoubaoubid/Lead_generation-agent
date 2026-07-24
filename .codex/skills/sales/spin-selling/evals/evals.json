@@ -1,0 +1,17 @@
+{
+  "skill_name": "spin-selling",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Prépare un appel avec un prospect qui utilise déjà un CRM mais dont le processus de qualification est inconnu. Fournis les questions SPIN et les informations manquantes.",
+      "expected_output": "Questions par catégorie, faits connus, hypothèses et prochaine étape.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Le commercial suppose que le prix est l’objection principale, sans verbatim. Prépare l’entretien sans traiter cette objection comme un fait.",
+      "expected_output": "Objection classée comme hypothèse et questions de découverte adaptées.",
+      "files": []
+    }
+  ]
+}

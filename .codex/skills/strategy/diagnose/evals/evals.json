@@ -1,0 +1,17 @@
+{
+  "skill_name": "diagnose",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Le taux de réponse de la campagne est passé de 4,2 % à 1,1 % et le rebond est monté à 8 %. Distingue les causes prouvées des hypothèses et indique les preuves à collecter avant une action.",
+      "expected_output": "Diagnostic structuré, causes classées, confiance, preuves manquantes et aucune action externe.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Les réponses baissent mais nous n’avons ni données de délivrabilité ni historique par segment. Évite de conclure trop vite et propose le prochain skill ou test.",
+      "expected_output": "Diagnostic prudent avec causes concurrentes et données manquantes explicites.",
+      "files": []
+    }
+  ]
+}

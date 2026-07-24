@@ -1,0 +1,17 @@
+{
+  "skill_name": "100m-offers",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Structure une offre de génération de leads avec une preuve client disponible, aucun taux de réussite validé et aucune garantie autorisée.",
+      "expected_output": "Promesse prudente, preuves manquantes et garanties interdites explicites.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "La proposition annonce « 20 rendez-vous garantis en 30 jours », mais aucune source ne confirme le volume ni le délai. Analyse et corrige le contrat de promesse.",
+      "expected_output": "Rejet des chiffres non prouvés et séparation promesse conditionnelle/hypothèse.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "skill_name": "made-to-stick",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Évalue un email rempli de jargon, sans observation concrète et avec deux CTA. Score chaque critère et recommande une révision ou un rejet.",
+      "expected_output": "Scores cohérents, défauts observables et décision justifiée.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Le message affirme « 97 % de réussite » sans source. Vérifie la crédibilité et le risque d’exagération sans inventer de preuve.",
+      "expected_output": "Affirmation rejetée, risque élevé et preuve manquante explicite.",
+      "files": []
+    }
+  ]
+}

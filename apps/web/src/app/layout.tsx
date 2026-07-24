@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
+import "./auth.css";
+import "./workspace.css";
+import "./clients.css";
+import "./onboarding.css";
+import "./strategy-artifacts.css";
+import "./targeting.css";
 
 export const metadata: Metadata = {
-  title: "Lead Generation Sales",
+  title: {
+    default: "Lead Operations",
+    template: "%s · Lead Operations",
+  },
   description:
-    "Fondation technique de la plateforme de prospection multitenant.",
+    "Plateforme multitenant de pilotage des opérations de prospection.",
 };
 
 type RootLayoutProps = Readonly<{

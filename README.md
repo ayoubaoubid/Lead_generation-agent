@@ -32,18 +32,19 @@ L’application est alors disponible sur `http://localhost:3000`.
 
 ## Commandes
 
-| Commande               | Rôle                                            |
-| ---------------------- | ----------------------------------------------- |
-| `npm run dev`          | Démarre Next.js en développement                |
-| `npm run build`        | Produit le build de production                  |
-| `npm run start`        | Démarre le build de production                  |
-| `npm run lint`         | Exécute ESLint sans accepter d’avertissement    |
-| `npm run lint:fix`     | Corrige les problèmes ESLint sûrs               |
-| `npm run typecheck`    | Vérifie TypeScript sans générer de fichier      |
-| `npm test`             | Exécute les tests Vitest une fois               |
-| `npm run test:watch`   | Exécute Vitest en mode interactif               |
-| `npm run format`       | Formate les fichiers avec Prettier              |
-| `npm run format:check` | Vérifie le formatage sans modifier les fichiers |
+| Commande               | Rôle                                                          |
+| ---------------------- | ------------------------------------------------------------- |
+| `npm run dev`          | Démarre Next.js en développement                              |
+| `npm run build`        | Produit le build de production                                |
+| `npm run start`        | Démarre le build de production                                |
+| `npm run lint`         | Exécute ESLint sans accepter d’avertissement                  |
+| `npm run lint:fix`     | Corrige les problèmes ESLint sûrs                             |
+| `npm run typecheck`    | Vérifie TypeScript sans générer de fichier                    |
+| `npm test`             | Exécute les tests Vitest une fois                             |
+| `npm run test:watch`   | Exécute Vitest en mode interactif                             |
+| `npm run trigger:dev`  | Connecte les futures tâches au projet Trigger.dev Development |
+| `npm run format`       | Formate les fichiers avec Prettier                            |
+| `npm run format:check` | Vérifie le formatage sans modifier les fichiers               |
 
 Les scripts npm racine ciblent explicitement le workspace `@lead-generation/web`. Aucun
 orchestrateur de build supplémentaire n’est nécessaire tant qu’il n’existe qu’une
@@ -90,7 +91,7 @@ apps/web/          Application Next.js App Router
   src/types/       Types transversaux stables
   src/config/      Configuration publique et serveur validée
 packages/          Futurs packages partagés ayant plusieurs consommateurs
-trigger/           Futures tâches Trigger.dev
+trigger/           Frontière des futures tâches Trigger.dev
 supabase/          Futures migrations, configuration locale et tests RLS
 tests/             Futurs tests d’intégration et end-to-end transversaux
 docs/              Analyse, architecture et plans du projet
@@ -112,10 +113,11 @@ modules métier devront ensuite respecter l’isolation :
 Plateforme → Agence → Client → Ressource métier
 ```
 
-Les services prévus mais non encore configurés sont Supabase (Postgres, Auth, Storage),
-Trigger.dev, les fournisseurs IA, les fournisseurs d’enrichissement et de vérification,
-le service d’envoi, Google OAuth/Calendar et l’observabilité. Leur activation devra
-suivre les phases documentées dans `docs/IMPLEMENTATION_PLAN.md`.
+Supabase et le projet Trigger.dev Development disposent maintenant de leur fondation.
+Les tâches Trigger.dev et les fonctionnalités métier ne sont pas encore implémentées.
+Les fournisseurs IA, d’enrichissement, de vérification, d’envoi, Google OAuth/Calendar
+et l’observabilité devront être activés selon les phases documentées dans
+`docs/IMPLEMENTATION_PLAN.md`.
 
 ## Règles de contribution
 

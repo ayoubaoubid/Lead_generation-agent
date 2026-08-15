@@ -1,5 +1,13 @@
 # Trigger.dev
 
+La tâche `imports/process-csv-import.ts` traite les CSV privés par lots. Elle
+recharge systématiquement l’import et son tenant depuis Supabase, applique une
+déduplication conservative et conserve un résultat idempotent par numéro de
+ligne.
+
+Voir `docs/LEAD_DATA_IMPORTS.md` pour les états, l’annulation et les variables
+d’environnement.
+
 Cette frontière accueille les tâches durables, réessayables ou planifiées du projet
 Trigger.dev Cloud `lead_generation_workflow`.
 

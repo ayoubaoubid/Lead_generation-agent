@@ -22,10 +22,9 @@
 .client-filters {
   display: grid;
   align-items: center;
-  grid-template-columns: minmax(240px, 1.5fr) repeat(
-      3,
-      minmax(125px, 0.6fr)
-    ) auto auto;
+  grid-template-columns:
+    minmax(240px, 1.5fr) repeat(3, minmax(125px, 0.6fr))
+    auto auto;
   gap: 9px;
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -622,10 +621,9 @@
 
 @media (max-width: 1120px) {
   .client-filters {
-    grid-template-columns: minmax(240px, 1fr) repeat(
-        2,
-        minmax(130px, 0.5fr)
-      ) auto;
+    grid-template-columns:
+      minmax(240px, 1fr) repeat(2, minmax(130px, 0.5fr))
+      auto;
   }
 
   .client-filters > :nth-child(4) {

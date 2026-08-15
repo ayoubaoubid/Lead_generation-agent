@@ -7,6 +7,8 @@ import "./clients.css";
 import "./onboarding.css";
 import "./strategy-artifacts.css";
 import "./targeting.css";
+import "./lead-data.css";
+import "./agency-management.css";
 
 export const metadata: Metadata = {
   title: {

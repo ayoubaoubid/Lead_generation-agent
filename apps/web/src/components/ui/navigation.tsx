@@ -25,7 +25,11 @@ export function Tabs({
         ? { defaultValue: defaultValue ?? items[0]?.value ?? "" }
         : {})}
     >
-      <TabsPrimitive.List aria-label="Sections" className="ui-tabs-list">
+      <TabsPrimitive.List
+        aria-label="Sections"
+        className="ui-tabs-list"
+        tabIndex={0}
+      >
         {items.map((item) => (
           <TabsPrimitive.Trigger
             className="ui-tab"

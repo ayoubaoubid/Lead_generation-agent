@@ -17,6 +17,7 @@ describe("workspace navigation", () => {
       "ICP & Personas",
       "Companies",
       "Contacts",
+      "Imports",
       "Leads",
       "Segments",
       "Campaigns",
@@ -25,6 +26,7 @@ describe("workspace navigation", () => {
       "Pipeline",
       "Analytics",
       "Integrations",
+      "Compliance",
       "Settings",
     ]);
 

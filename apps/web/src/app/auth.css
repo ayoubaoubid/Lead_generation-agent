@@ -430,11 +430,20 @@
 
 @media (max-width: 620px) {
   .auth-story {
-    min-height: 240px;
+    min-height: 0;
+    padding: 22px 20px 24px;
   }
 
   .auth-story-copy {
-    margin: 42px 0 16px;
+    margin: 30px 0 0;
+  }
+
+  .auth-story-copy h2 {
+    max-width: 330px;
+    margin-top: 12px;
+    font-size: 25px;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
   }
 
   .auth-story-copy p,
@@ -445,7 +454,7 @@
   .auth-panel {
     min-height: auto;
     place-items: start center;
-    padding: 40px 20px 56px;
+    padding: 32px 20px 48px;
   }
 
   .auth-footer,

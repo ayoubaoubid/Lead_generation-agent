@@ -12,8 +12,10 @@ import {
   ListFilter,
   Megaphone,
   Settings,
+  ShieldCheck,
   Shapes,
   Target,
+  Upload,
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
@@ -115,6 +117,18 @@ export const workspaceSections = [
     icon: ContactRound,
   },
   {
+    key: "imports",
+    label: "Imports",
+    href: "/imports",
+    description:
+      "Prévisualisation, mapping et suivi des imports CSV du client actif.",
+    emptyTitle: "Aucun import",
+    emptyDescription:
+      "Les imports CSV et leurs rapports d’erreurs apparaîtront ici.",
+    scope: "client",
+    icon: Upload,
+  },
+  {
     key: "leads",
     label: "Leads",
     href: "/leads",
@@ -209,6 +223,18 @@ export const workspaceSections = [
     icon: Blocks,
   },
   {
+    key: "compliance",
+    label: "Compliance",
+    href: "/compliance",
+    description:
+      "Finalités, conservation, oppositions, suppressions et demandes relatives aux données.",
+    emptyTitle: "Configuration juridique à compléter",
+    emptyDescription:
+      "La base juridique et la conservation doivent être validées selon les pays et canaux utilisés.",
+    scope: "client",
+    icon: ShieldCheck,
+  },
+  {
     key: "settings",
     label: "Settings",
     href: "/settings",
@@ -231,7 +257,7 @@ export const workspaceNavigationGroups = [
   },
   {
     label: "Données",
-    sectionKeys: ["companies", "contacts", "leads", "segments"],
+    sectionKeys: ["companies", "contacts", "imports", "leads", "segments"],
   },
   {
     label: "Engagement",
@@ -239,7 +265,7 @@ export const workspaceNavigationGroups = [
   },
   {
     label: "Système",
-    sectionKeys: ["analytics", "integrations", "settings"],
+    sectionKeys: ["analytics", "integrations", "compliance", "settings"],
   },
 ] as const;
 

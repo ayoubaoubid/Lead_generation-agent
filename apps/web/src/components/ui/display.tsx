@@ -37,7 +37,7 @@ export function Avatar({
     .toUpperCase();
   return (
     <span
-      aria-label={name}
+      aria-label={status ? `${name}, ${status}` : name}
       className={cn("ui-avatar", `ui-avatar--${size}`, className)}
       role="img"
       {...props}
@@ -53,7 +53,7 @@ export function Avatar({
       )}
       {status ? (
         <span
-          aria-label={status}
+          aria-hidden
           className={cn("ui-avatar-status", `ui-status-dot--${status}`)}
         />
       ) : null}

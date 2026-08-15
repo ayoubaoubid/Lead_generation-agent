@@ -39,6 +39,8 @@ export const permissionKeys = [
   "pipeline.read",
   "pipeline.write",
   "analytics.read",
+  "compliance.read",
+  "compliance.manage",
   "audit.read",
   "settings.read",
   "settings.manage",

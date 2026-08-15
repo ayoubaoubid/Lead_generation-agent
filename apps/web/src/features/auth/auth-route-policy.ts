@@ -1,5 +1,6 @@
 const protectedPrefixes = [
   "/account",
+  "/agency",
   "/dashboard",
   "/clients",
   "/strategy",
@@ -7,6 +8,7 @@ const protectedPrefixes = [
   "/icp-personas",
   "/companies",
   "/contacts",
+  "/imports",
   "/leads",
   "/segments",
   "/campaigns",
@@ -14,6 +16,7 @@ const protectedPrefixes = [
   "/meetings",
   "/pipeline",
   "/analytics",
+  "/compliance",
   "/integrations",
   "/settings",
 ] as const;

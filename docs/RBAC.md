@@ -17,8 +17,9 @@ Ils servent uniquement à provisionner et présenter une matrice de permissions.
 source d’autorité est la relation `roles → role_permissions → permissions`.
 
 Dans un contexte client, les permissions du rôle agence actif et du rôle client actif
-sont cumulées. Cela permet à un membre interne de l’agence d’opérer un client avec son
-rôle agence, tandis qu’un utilisateur client reste limité à son affectation exacte.
+sont cumulées. Le rôle agence `Recruiter` ne reçoit volontairement aucune permission
+métier couvrant tous les clients : ses capacités opérationnelles proviennent seulement
+du rôle client `Recruiter` créé pour chaque affectation explicite.
 
 Les données d’autorisation ne sont pas placées dans `user_metadata` ni dans des claims
 JWT susceptibles de devenir obsolètes. Chaque contrôle sensible relit les memberships,
@@ -46,33 +47,29 @@ Les permissions sont organisées par ressource :
 agence, client ou aux deux. Un trigger refuse par exemple l’affectation de
 `agency.transfer_ownership` à un rôle client.
 
-## 3. Rôles système initiaux
+## 3. Rôles système du MVP
 
 ### Rôles agence
 
 | Rôle | Capacités principales |
 |---|---|
 | Agency Owner | Toutes les permissions agence, dont le transfert de propriété |
-| Agency Admin | Toutes les permissions agence sauf le transfert de propriété |
-| Campaign Manager | Construction, modification, approbation et lancement des campagnes |
-| Lead Researcher | Lecture des offres et lecture/écriture des leads |
-| SDR | Leads, messages, réponses, rendez-vous et pipeline opérationnel |
-| Sales Manager | Campagnes, messages, réponses, rendez-vous, pipeline et analytics |
-| Reviewer | Lecture et approbation des campagnes et messages, sans lancement |
-| Analyst | Lecture opérationnelle et analytics, sans mutation |
+| Recruiter | Membership interne uniquement ; aucun accès métier global aux clients |
 
 ### Rôles client
 
 | Rôle | Capacités principales |
 |---|---|
-| Client Admin | Administration du client, membres, contenus et opérations, sans lancement de campagne |
-| Client Reviewer | Lecture et approbation des campagnes/messages |
-| Client Viewer | Lecture seule des données et analytics autorisés |
+| Recruiter | Workflow opérationnel du client affecté : onboarding, stratégie, ciblage, leads, campagnes, messages, réponses, rendez-vous, pipeline et analytics |
 
-Les rôles système sont provisionnés lors de la création de l’agence ou du client. La
-migration synchronise également les tenants déjà présents. Le schéma conserve la
-possibilité de rôles personnalisés, mais aucune mutation directe de rôle ou de matrice
-de permissions n’est exposée au navigateur.
+Les rôles système sont provisionnés lors de la création de l’agence ou du client. Les
+anciens rôles sont archivés par la migration et leurs memberships sont convertis en
+Recruiter, sauf le rôle Owner. Ils restent attribuables dans l’historique mais ne
+peuvent plus accorder de permission.
+
+Le Recruiter peut lancer une campagne déjà approuvée pour le client affecté. Il ne
+peut pas créer ou administrer un client, inviter des membres, gérer les rôles,
+modifier les paramètres protégés ou transférer l’agence.
 
 ## 4. Vérification serveur
 
@@ -103,8 +100,10 @@ Les policies utilisent les permissions atomiques et non les rôles :
 
 Les mutations directes de `agency_members`, `client_members`, `roles` et
 `role_permissions`, ainsi que les mutations directes d’agence/client, sont retirées
-au rôle PostgreSQL `authenticated`. Les invitations passent par les RPC contrôlées,
-qui revalident le tenant, `member.invite` et `member.assign_role`.
+au rôle PostgreSQL `authenticated`. Les invitations passent par
+`invite_or_assign_recruiter`, qui revalide le tenant, `member.invite`,
+`member.assign_role` et chaque client sélectionné. Les anciennes RPC génériques
+d’affectation ne sont plus exécutables par `authenticated`.
 
 ## 6. Interface utilisateur
 
@@ -121,7 +120,7 @@ Les actions sensibles déjà exposées écrivent des événements append-only :
 
 - `agency.created` et `client.created`, avec provisionnement des rôles système ;
 - `client.updated` et `client.archived`, sans duplication des valeurs du profil ;
-- `agency_membership.invited` et `client_membership.invited`, avec le rôle affecté ;
+- `recruiter.invited` et `recruiter.assigned`, avec les clients validés ;
 - `agency_membership.accepted` ;
 - `tenant_context.selected`.
 - `onboarding.step_saved`, `onboarding.completed` et `onboarding.validated`, sans
@@ -134,10 +133,10 @@ réaffectation ou suspension devra utiliser une RPC/service audité avant d’ê
 
 Les tests couvrent notamment :
 
-- Owner/Admin et transfert de propriété ;
-- Reviewer : approbation autorisée, lancement refusé ;
-- Analyst : analytics autorisés, écriture des leads refusée ;
-- Client Admin/Reviewer/Viewer ;
+- provisionnement de deux rôles agence et d’un rôle client ;
+- Owner : administration, invitations et accès à tous ses clients ;
+- Recruiter : opérations uniquement sur les clients affectés ;
+- refus de création de client, d’invitation et de paramètres protégés au Recruiter ;
 - refus d’une permission agence sur un rôle client ;
 - absence d’autorité pour un rôle simplement nommé `Agency Owner` ;
 - helpers serveur `allOf`/`anyOf` et refus des permissions critiques ;

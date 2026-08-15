@@ -4,9 +4,12 @@
 
 L’application utilise Supabase Auth avec email et mot de passe, sessions SSR en cookies et flux PKCE. L’inscription publique est désactivée : un compte est créé uniquement par invitation depuis un environnement d’administration fiable.
 
-À ce stade, l’invitation est envoyée depuis **Supabase Dashboard → Authentication → Users → Send invitation**. L’interface d’administration des invitations sera ajoutée avec les modules memberships/RBAC ; elle devra utiliser une clé secrète uniquement côté serveur et vérifier une permission d’administration avant tout appel à `inviteUserByEmail`.
+L’Agency Owner invite désormais les Recruiters depuis `/settings`. La Server Action
+vérifie `member.invite` et `member.assign_role` avant tout appel serveur à
+`inviteUserByEmail`, puis la base valide chaque client affecté.
 
-L’authentification ne crée aucun rôle, membership, agence ou client. Ces associations restent une opération d’administration distincte.
+L’invitation Auth et l’affectation métier restent deux opérations distinctes : Auth
+crée ou retrouve le compte, puis la RPC contrôlée crée les memberships Recruiter.
 
 ## Routes
 
@@ -33,7 +36,8 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clé publishable locale>
 APP_URL=http://localhost:3000
 ```
 
-La clé `SUPABASE_SERVICE_ROLE_KEY` n’est utilisée par aucun fichier Auth frontend ou SSR de cette étape.
+La clé `SUPABASE_SERVICE_ROLE_KEY` est requise uniquement par le service serveur
+d’invitation. Elle n’est jamais importée dans un composant client.
 
 `supabase/config.toml` configure :
 

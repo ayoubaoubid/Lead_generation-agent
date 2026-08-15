@@ -89,7 +89,7 @@ L’opération est atomique :
 
 1. vérification de `auth.uid()` et du profil ;
 2. création de l’agence ;
-3. création du rôle système `owner` ;
+3. création des rôles système `owner` et `recruiter` ;
 4. affectation du catalogue complet de permissions ;
 5. création du membership actif du créateur ;
 6. création de l’audit `agency.created`.
@@ -98,19 +98,26 @@ Les fonctions privilégiées sont placées dans le schéma non exposé `private`
 un `search_path` vide, vérifient l’identité en interne et possèdent des droits
 `EXECUTE` minimaux. Aucun client privilégié Supabase n’est utilisé dans le navigateur.
 
-### 5.2 Adhésion à une agence
+### 5.2 Invitation d’un Recruiter
 
-Un administrateur ayant `member.invite` crée un membership `invited` pour un profil
-et un rôle agence appartenant au même tenant. L’utilisateur invité appelle ensuite
-`acceptAgencyMembershipAction`.
+L’Agency Owner saisit l’email et choisit zéro ou plusieurs clients. La Server Action
+vérifie d’abord ses permissions avec sa propre session, puis utilise le client Auth
+administratif exclusivement côté serveur pour inviter ou retrouver le compte.
+`SUPABASE_SERVICE_ROLE_KEY` n’est jamais envoyé au navigateur.
 
-La fonction privée n’active la ligne que si :
+La RPC `invite_or_assign_recruiter` :
 
-- le membership correspond à l’identifiant demandé ;
-- `profile_id = auth.uid()` ;
-- le statut courant est `invited`.
+- interdit d’affecter l’Owner comme Recruiter ;
+- impose le rôle agence `recruiter` ;
+- vérifie que chaque client appartient à l’agence et n’est pas archivé ;
+- impose le rôle client `recruiter` pour chaque affectation ;
+- conserve un membership déjà actif lors d’une affectation supplémentaire ;
+- crée l’audit `recruiter.invited` ou `recruiter.assigned`.
 
-L’acceptation produit l’audit `agency_membership.accepted`.
+Lors de la première connexion ou de la définition du mot de passe,
+`accept_pending_recruiter_invitations` active uniquement les memberships du profil
+retourné par `auth.uid()`. Les memberships agence et client deviennent actifs dans la
+même opération et l’acceptation est auditée.
 
 ### 5.3 Création d’un client
 
@@ -119,17 +126,15 @@ le cookie actif, revalide le membership et exige `client.create`. La fonction RP
 `create_client` refait ensuite le contrôle de permission dans PostgreSQL, crée le
 client avec l’`agency_id` vérifié et écrit l’audit `client.created`.
 
-### 5.4 Affectation des utilisateurs
+### 5.4 Affectation des Recruiters
 
-- l’affectation agence exige `member.invite`, `member.assign_role` et un rôle agence
-  du tenant actif ;
-- l’affectation client exige `member.invite`, `member.assign_role`, un client
-  accessible et un rôle client appartenant exactement au même couple agence/client ;
-- un utilisateur doit recevoir un membership agence avant un membership client ;
-- les nouvelles affectations utilisent le statut `invited` ;
-- les RPC `assign_agency_member` et `assign_client_member` refont les contrôles dans
-  PostgreSQL et créent les audits d’invitation correspondants ;
-- l’envoi de l’email d’invitation reste une fonctionnalité séparée.
+- seul l’Agency Owner possède `member.invite` et `member.assign_role` ;
+- un Recruiter actif peut recevoir des clients supplémentaires sans nouvelle
+  invitation Auth ;
+- une affectation n’accorde jamais une permission agence globale ;
+- la liste des clients du Recruiter est filtrée par RLS à partir des permissions de
+  ses memberships client actifs ;
+- décocher ou retirer une affectation n’est pas encore exposé dans ce périmètre.
 
 ## 6. RLS et droits Data API
 
@@ -140,7 +145,8 @@ les policies limitent les lignes.
 Principaux contrôles :
 
 - `agencies` : lecture uniquement par membership agence actif ;
-- `clients` : lecture par permission agence ou membership client actif exact ;
+- `clients` : lecture par `client.read`; l’Owner la possède au niveau agence et le
+  Recruiter seulement au niveau des clients affectés ;
 - `agency_members` et `client_members` : lecture personnelle ou permission
   `member.read`; les mutations exposées passent par des RPC auditées ;
 - `roles` et `role_permissions` : visibilité du rôle personnel ou permissions RBAC ;
@@ -164,6 +170,9 @@ Les tests pgTAP sous `supabase/tests/database` démontrent notamment :
 - la sélection d’agence, la création de client et les affectations sont revalidées
   par les RPC avant tout effet ;
 - une invitation n’accorde aucun accès avant son acceptation.
+- un Recruiter ne voit pas un autre client de la même agence ;
+- un client d’une autre agence ne peut pas être injecté dans une affectation ;
+- un Recruiter ne peut ni créer un client ni inviter un autre Recruiter.
 
 Les tests TypeScript vérifient séparément que le service serveur refuse les identifiants
 agence/client falsifiés avant de construire un `TenantContext`.

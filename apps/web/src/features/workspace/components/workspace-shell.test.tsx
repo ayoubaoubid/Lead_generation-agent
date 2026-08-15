@@ -65,4 +65,27 @@ describe("application shell", () => {
       screen.getByRole("button", { name: "Ouvrir la navigation" }),
     ).toBeTruthy();
   });
+
+  it("offers agency creation when the user has no workspace", () => {
+    render(
+      <ApplicationShell
+        context={{
+          user: {
+            displayName: "Nouvel utilisateur",
+            email: "new@example.com",
+          },
+          agencies: [],
+          clients: [],
+        }}
+      >
+        <h1>Dashboard</h1>
+      </ApplicationShell>,
+    );
+
+    expect(
+      screen
+        .getByRole("link", { name: "Créer une agence" })
+        .getAttribute("href"),
+    ).toBe("/agency/new");
+  });
 });

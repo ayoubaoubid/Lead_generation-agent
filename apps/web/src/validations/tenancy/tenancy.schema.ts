@@ -39,3 +39,13 @@ export const assignClientMemberSchema = z.object({
   profileId: z.uuid(),
   roleId: z.uuid(),
 });
+
+export const inviteRecruiterSchema = z.object({
+  email: z.string().trim().toLowerCase().pipe(z.email()),
+  clientIds: z.array(z.uuid()).max(100),
+});
+
+export const assignRecruiterClientsSchema = z.object({
+  profileId: z.uuid(),
+  clientIds: z.array(z.uuid()).min(1).max(100),
+});

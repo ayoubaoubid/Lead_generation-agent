@@ -8,6 +8,8 @@ import {
   ACTIVE_AGENCY_COOKIE_NAME,
   ACTIVE_CLIENT_COOKIE_NAME,
 } from "@/lib/tenancy/server-tenant-context";
+import { serverLogger } from "@/lib/logging/server-logger";
+import { acceptPendingRecruiterInvitations } from "@/services/agency/recruiter-invitation.service";
 
 export type WorkspaceOption = Readonly<{
   id: string;
@@ -35,6 +37,19 @@ function validCookieId(value: string | undefined): string | undefined {
 
 export async function getWorkspaceShellContext(): Promise<WorkspaceShellContext> {
   const { supabase, user } = await requireAuthenticatedUser();
+
+  try {
+    await acceptPendingRecruiterInvitations(supabase);
+  } catch (error) {
+    serverLogger.warn("Pending Recruiter memberships could not be activated.", {
+      correlationId: crypto.randomUUID(),
+      operation: "workspace.accept_recruiter_invitations",
+      actor: { kind: "user", actorId: user.id },
+      attributes: {
+        error: error instanceof Error ? error.name : "unknown",
+      },
+    });
+  }
 
   const [profileResult, membershipsResult] = await Promise.all([
     supabase

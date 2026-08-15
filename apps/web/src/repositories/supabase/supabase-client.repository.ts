@@ -288,6 +288,25 @@ export class SupabaseClientRepository implements ClientRepository {
     clientId: string,
     context: RepositoryContext,
   ): Promise<readonly AgencyMemberOption[]> {
+    const { data: recruiterRole, error: recruiterRoleError } =
+      await this.supabase
+        .from("roles")
+        .select("id")
+        .eq("agency_id", context.tenant.agencyId)
+        .eq("scope", "agency")
+        .eq("slug", "recruiter")
+        .is("client_id", null)
+        .is("archived_at", null)
+        .maybeSingle();
+
+    if (recruiterRoleError || !recruiterRole) {
+      throw new RepositoryError(
+        "unavailable",
+        "Unable to resolve the Recruiter role.",
+        recruiterRoleError,
+      );
+    }
+
     const [
       { data: agencyMembers, error: agencyMembersError },
       { data: clientMembers, error: clientMembersError },
@@ -296,6 +315,7 @@ export class SupabaseClientRepository implements ClientRepository {
         .from("agency_members")
         .select("profile_id")
         .eq("agency_id", context.tenant.agencyId)
+        .eq("role_id", recruiterRole.id)
         .eq("status", "active"),
       this.supabase
         .from("client_members")
@@ -354,6 +374,7 @@ export class SupabaseClientRepository implements ClientRepository {
       .eq("agency_id", context.tenant.agencyId)
       .eq("client_id", clientId)
       .eq("scope", "client")
+      .eq("slug", "recruiter")
       .is("archived_at", null)
       .order("name");
 

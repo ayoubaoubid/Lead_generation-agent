@@ -5,7 +5,10 @@ import { isGuestOnlyPath, isProtectedPath } from "./auth-route-policy";
 describe("authentication route policy", () => {
   it("protects workspace, account routes and sensitive Auth steps", () => {
     expect(isProtectedPath("/dashboard")).toBe(true);
+    expect(isProtectedPath("/agency/new")).toBe(true);
     expect(isProtectedPath("/campaigns")).toBe(true);
+    expect(isProtectedPath("/imports/import-id")).toBe(true);
+    expect(isProtectedPath("/compliance")).toBe(true);
     expect(isProtectedPath("/settings/members")).toBe(true);
     expect(isProtectedPath("/account/profile")).toBe(true);
     expect(isProtectedPath("/auth/update-password")).toBe(true);

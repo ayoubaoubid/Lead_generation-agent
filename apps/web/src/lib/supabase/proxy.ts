@@ -51,9 +51,9 @@ export async function updateAuthSession(request: NextRequest) {
   );
 
   const { data, error } = await supabase.auth.getClaims();
-  const isAuthenticated = !error && Boolean(data?.claims.sub);
+  const hasVerifiedClaims = !error && Boolean(data?.claims.sub);
 
-  if (!isAuthenticated && isProtectedPath(pathname)) {
+  if (!hasVerifiedClaims && isProtectedPath(pathname)) {
     const signInUrl = request.nextUrl.clone();
     const nextPath = getSafeRedirectPath(
       `${pathname}${request.nextUrl.search}`,
@@ -65,7 +65,17 @@ export async function updateAuthSession(request: NextRequest) {
     return copyResponseCookies(response, NextResponse.redirect(signInUrl));
   }
 
-  if (isAuthenticated && isGuestOnlyPath(pathname)) {
+  if (hasVerifiedClaims && isGuestOnlyPath(pathname)) {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      await supabase.auth.signOut({ scope: "local" });
+      return response;
+    }
+
     const profileUrl = request.nextUrl.clone();
     profileUrl.pathname = "/dashboard";
     profileUrl.search = "";

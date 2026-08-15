@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  assignRecruiterClientsSchema,
   assignClientMemberSchema,
   createAgencySchema,
+  inviteRecruiterSchema,
   selectAgencySchema,
   selectClientSchema,
 } from "./tenancy.schema";
@@ -37,6 +39,27 @@ describe("tenancy schemas", () => {
       assignClientMemberSchema.safeParse({
         clientId: "a1000000-0000-0000-0000-000000000001",
         profileId: "30000000-0000-0000-0000-000000000001",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("normalizes a Recruiter invitation and validates every client id", () => {
+    expect(
+      inviteRecruiterSchema.parse({
+        email: "  RECRUITER@EXAMPLE.COM ",
+        clientIds: ["a1000000-0000-4000-8000-000000000001"],
+      }),
+    ).toEqual({
+      email: "recruiter@example.com",
+      clientIds: ["a1000000-0000-4000-8000-000000000001"],
+    });
+  });
+
+  it("rejects a Recruiter assignment without an explicit client", () => {
+    expect(
+      assignRecruiterClientsSchema.safeParse({
+        profileId: "30000000-0000-0000-0000-000000000001",
+        clientIds: [],
       }).success,
     ).toBe(false);
   });

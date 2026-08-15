@@ -1,6 +1,7 @@
 "use client";
 
-import { Building2, LoaderCircle, UserRoundSearch } from "lucide-react";
+import { Building2, LoaderCircle, Plus, UserRoundSearch } from "lucide-react";
+import Link from "next/link";
 import { useActionState, useRef } from "react";
 
 import { selectActiveAgencyAction } from "@/features/agency/agency.actions";
@@ -96,19 +97,24 @@ export function TenantSelectors({
           : "workspace-tenant-selectors"
       }
     >
-      <Selector
-        activeId={context.activeAgencyId}
-        ariaLabel="Agence active"
-        disabled={context.agencies.length === 0}
-        icon={<Building2 size={15} />}
-        name="agencyId"
-        onSubmit={agencyAction}
-        options={context.agencies}
-        pending={agencyPending}
-        placeholder={
-          context.agencies.length === 0 ? "Aucune agence" : "Choisir une agence"
-        }
-      />
+      {context.agencies.length === 0 ? (
+        <Link className="workspace-create-agency-link" href="/agency/new">
+          <Plus aria-hidden size={14} />
+          Créer une agence
+        </Link>
+      ) : (
+        <Selector
+          activeId={context.activeAgencyId}
+          ariaLabel="Agence active"
+          disabled={false}
+          icon={<Building2 size={15} />}
+          name="agencyId"
+          onSubmit={agencyAction}
+          options={context.agencies}
+          pending={agencyPending}
+          placeholder="Choisir une agence"
+        />
+      )}
       <span className="workspace-tenant-divider" aria-hidden />
       <Selector
         activeId={context.activeClientId}

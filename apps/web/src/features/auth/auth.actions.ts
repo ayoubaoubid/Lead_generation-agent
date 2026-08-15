@@ -4,7 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { buildPasswordRecoveryRedirectUrl } from "@/lib/auth/auth-url";
+import { serverLogger } from "@/lib/logging/server-logger";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  clearActiveClientCookie,
+  setActiveAgencyCookie,
+} from "@/lib/tenancy/server-tenant-context";
+import { acceptPendingRecruiterInvitations } from "@/services/agency/recruiter-invitation.service";
 
 import {
   authErrorState,
@@ -27,6 +33,27 @@ import { requestPasswordRecovery } from "./password-recovery.service";
 function stringField(formData: FormData, name: string): string {
   const value = formData.get(name);
   return typeof value === "string" ? value : "";
+}
+
+async function activatePendingRecruiterContext(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+) {
+  try {
+    const agencyId = await acceptPendingRecruiterInvitations(supabase);
+
+    if (agencyId) {
+      await setActiveAgencyCookie(agencyId);
+      await clearActiveClientCookie();
+    }
+  } catch (error) {
+    serverLogger.warn("Pending Recruiter invitations could not be activated.", {
+      correlationId: crypto.randomUUID(),
+      operation: "auth.accept_recruiter_invitations",
+      attributes: {
+        error: error instanceof Error ? error.message : "unknown",
+      },
+    });
+  }
 }
 
 export async function signInAction(
@@ -58,6 +85,8 @@ export async function signInAction(
   if (error) {
     return authErrorState(AUTH_MESSAGES.invalidCredentials);
   }
+
+  await activatePendingRecruiterContext(supabase);
 
   const { data: assurance } =
     await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -133,6 +162,7 @@ export async function updatePasswordAction(
     return authErrorState(AUTH_MESSAGES.passwordUpdateFailed);
   }
 
+  await activatePendingRecruiterContext(supabase);
   redirect("/account/profile?notice=password-updated");
 }
 

@@ -117,6 +117,7 @@ export async function assignClientMemberAction(
       .eq("agency_id", tenant.agencyId)
       .eq("client_id", tenant.clientId)
       .eq("scope", "client")
+      .eq("slug", "recruiter")
       .is("archived_at", null)
       .maybeSingle();
 
@@ -127,11 +128,10 @@ export async function assignClientMemberAction(
       };
     }
 
-    const { error } = await supabase.rpc("assign_client_member", {
+    const { error } = await supabase.rpc("invite_or_assign_recruiter", {
       requested_agency_id: tenant.agencyId,
-      requested_client_id: tenant.clientId,
+      requested_client_ids: [tenant.clientId],
       requested_profile_id: parsed.data.profileId,
-      requested_role_id: role.id,
     });
 
     if (error) {
@@ -143,9 +143,7 @@ export async function assignClientMemberAction(
 
     revalidatePath("/");
     revalidatePath(`/clients/${tenant.clientId}`);
-    return tenantActionSuccessState(
-      "L’utilisateur a été invité dans l’espace client.",
-    );
+    return tenantActionSuccessState("Le Recruiter a été affecté à ce client.");
   } catch (error) {
     return tenantActionErrorState(error);
   }

@@ -8,6 +8,8 @@ out/
 dist/
 build/
 coverage/
+playwright-report/
+test-results/
 *.tsbuildinfo
 next-env.d.ts
 

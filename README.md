@@ -1,134 +1,182 @@
 # Lead Generation Sales
 
-Fondation technique de la plateforme multitenant privée opérée par une agence B2B et décrite dans le cahier des
-charges. Le dépôt contient actuellement le socle Next.js et ses outils de qualité,
-sans fonctionnalité métier, migration Supabase ni tâche Trigger.dev.
+Plateforme privée de prospection B2B opérée par une agence. Un **Agency Owner**
+crée l’agence et ses clients, affecte les **Recruiters**, puis ceux-ci opèrent le
+workflow de recherche, qualification, campagnes et suivi pour les clients
+autorisés.
 
-Le produit n'est pas un SaaS public en libre-service. Les espaces clients seront créés
-manuellement par des administrateurs autorisés ; aucun paiement en ligne, abonnement
-SaaS, plan tarifaire, checkout, billing ou Stripe ne fait partie de l'architecture.
+La hiérarchie de sécurité est :
+
+```text
+Platform → Agency → Clients → Resources
+```
+
+Le produit n’est pas un SaaS public en libre-service. Contrats et règlements
+restent hors plateforme ; aucun paiement, abonnement, checkout, billing ou
+Stripe ne fait partie du dépôt.
+
+## État du MVP
+
+Les modules métier, migrations locales, RLS/RBAC, skills IA, tâches Trigger.dev,
+design system et interfaces opérationnelles sont présents. Le statut réel est
+**Internal testing ready** : les adaptateurs réels d’enrichissement, vérification,
+email et calendrier doivent encore être choisis, implémentés et testés avant une
+bêta. Voir `docs/MVP_AUDIT.md`.
 
 ## Prérequis
 
-- Node.js 22.12 ou plus récent (la version de référence est dans `.nvmrc`) ;
-- npm 10 ou plus récent (fourni avec Node.js) ;
+- Node.js 22.12 ou plus récent (`.nvmrc`) ;
+- npm 10 ou plus récent ;
 - Git ;
-- Docker Desktop sera nécessaire lors de l’initialisation future de Supabase local.
+- Docker Desktop pour Supabase local ;
+- Supabase CLI fournie par les dépendances du dépôt ;
+- un projet Trigger.dev pour tester les tâches durables.
 
-Supabase, Trigger.dev et les fournisseurs externes ne sont pas nécessaires pour
-afficher ou compiler la fondation actuelle.
+## Installation locale
 
-## Installation
-
-Depuis la racine du dépôt :
+Depuis la racine :
 
 ```powershell
 npm install
-Copy-Item .env.example apps/web/.env.local
+Copy-Item .env.example .env.local
+npm run supabase:start
 npm run dev
 ```
 
-L’application est alors disponible sur `http://localhost:3000`.
+Next.js est disponible sur `http://localhost:3000`. Supabase Studio et Mailpit
+utilisent les URLs affichées par `npm run supabase:start`.
+
+Compléter au minimum dans `.env.local` :
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+APP_URL
+SUPABASE_SERVICE_ROLE_KEY
+```
+
+Les commandes racine `dev`, `build` et `start` chargent `.env`, puis
+`.env.local` en priorité, avant de lancer l’application `apps/web`. Il n’est
+donc pas nécessaire de dupliquer les secrets dans `apps/web/.env.local`.
+
+Ne jamais placer la service role key dans une variable `NEXT_PUBLIC_*`.
+
+### Persistance de Supabase local
+
+Les données locales sont stockées dans des volumes Docker nommés et survivent
+à un arrêt normal de Supabase, de Docker Desktop ou du PC. Avant d’éteindre la
+machine, arrêter d’abord Next.js avec `Ctrl+C`, puis exécuter :
+
+```powershell
+npm run supabase:stop
+```
+
+Après redémarrage, lancer Docker Desktop puis :
+
+```powershell
+npm run supabase:start
+npm run supabase:status
+npm run dev
+```
+
+Ne jamais utiliser `supabase stop --no-backup`, `docker volume rm`,
+`docker system prune --volumes` ou `npm run db:reset` pour un simple arrêt :
+ces commandes peuvent supprimer ou reconstruire les données locales.
 
 ## Commandes
 
-| Commande               | Rôle                                                          |
-| ---------------------- | ------------------------------------------------------------- |
-| `npm run dev`          | Démarre Next.js en développement                              |
-| `npm run build`        | Produit le build de production                                |
-| `npm run start`        | Démarre le build de production                                |
-| `npm run lint`         | Exécute ESLint sans accepter d’avertissement                  |
-| `npm run lint:fix`     | Corrige les problèmes ESLint sûrs                             |
-| `npm run typecheck`    | Vérifie TypeScript sans générer de fichier                    |
-| `npm test`             | Exécute les tests Vitest une fois                             |
-| `npm run test:watch`   | Exécute Vitest en mode interactif                             |
-| `npm run trigger:dev`  | Connecte les futures tâches au projet Trigger.dev Development |
-| `npm run format`       | Formate les fichiers avec Prettier                            |
-| `npm run format:check` | Vérifie le formatage sans modifier les fichiers               |
+| Commande                  | Rôle                                  |
+| ------------------------- | ------------------------------------- |
+| `npm run dev`             | démarre Next.js                       |
+| `npm run build`           | produit le build de production        |
+| `npm run start`           | démarre le build                      |
+| `npm run lint`            | exécute ESLint sans warning           |
+| `npm run typecheck`       | vérifie Web et Trigger.dev            |
+| `npm test`                | exécute Vitest                        |
+| `npm run test:e2e`        | exécute Playwright et axe             |
+| `npm run db:test`         | exécute les tests pgTAP locaux        |
+| `npm run db:types`        | régénère les types Supabase locaux    |
+| `npm run supabase:start`  | démarre Supabase local                |
+| `npm run supabase:status` | affiche les URLs des services locaux  |
+| `npm run supabase:stop`   | arrête Supabase local                 |
+| `npm run db:reset`        | détruit et reconstruit la base locale |
+| `npm run trigger:dev`     | démarre Trigger.dev Development       |
+| `npm run format:check`    | vérifie Prettier                      |
 
-Les scripts npm racine ciblent explicitement le workspace `@lead-generation/web`. Aucun
-orchestrateur de build supplémentaire n’est nécessaire tant qu’il n’existe qu’une
-seule application exécutable.
+Les tests E2E locaux utilisent Microsoft Edge installé. En CI, installer
+Chromium avec `npx playwright install --with-deps chromium`.
 
 ## Variables d’environnement
 
-Copier `.env.example` vers `apps/web/.env.local`. Next.js charge les fichiers
-d’environnement depuis la racine de l’application, ici `apps/web`.
+`.env.example` contient toutes les clés attendues, sans valeur réelle. La
+classification complète, le caractère obligatoire et les règles de rotation
+sont documentés dans `docs/ENVIRONMENT_VARIABLES.md`.
 
-| Variable                               | Portée             | Utilisation prévue                             |
-| -------------------------------------- | ------------------ | ---------------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`             | Navigateur         | URL du projet Supabase                         |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Navigateur         | Clé publique Supabase                          |
-| `SUPABASE_SERVICE_ROLE_KEY`            | Serveur uniquement | Opérations privilégiées strictement contrôlées |
-| `TRIGGER_SECRET_KEY`                   | Serveur uniquement | Exécution des tâches durables                  |
-| `SENTRY_DSN`                           | Serveur            | Observabilité                                  |
-| `GROQ_API_KEY`                         | Serveur uniquement | Fournisseur IA                                 |
-| `APOLLO_API_KEY`                       | Serveur uniquement | Enrichissement                                 |
-| `FIRECRAWL_API_KEY`                    | Serveur uniquement | Extraction de contenu                          |
-| `ZEROBOUNCE_API_KEY`                   | Serveur uniquement | Vérification d’adresses email                  |
-| `RESEND_API_KEY`                       | Serveur uniquement | Envoi transactionnel                           |
-| `GOOGLE_CLIENT_ID`                     | Serveur uniquement | OAuth Google                                   |
-| `GOOGLE_CLIENT_SECRET`                 | Serveur uniquement | OAuth Google                                   |
+Principales catégories :
 
-Toutes ces variables restent optionnelles pendant cette phase. Elles deviendront
-obligatoires module par module, au moment où l’intégration correspondante sera
-implémentée. Les valeurs `NEXT_PUBLIC_*` sont exposées au navigateur et figées au
-moment du build. La clé `SUPABASE_SERVICE_ROLE_KEY` et les autres secrets ne doivent
-jamais être importés dans du code client, journalisés ou commités.
+- Supabase public et service role ;
+- Trigger.dev ;
+- observabilité ;
+- fournisseur IA ;
+- enrichissement et vérification ;
+- email applicatif et webhook inbound ;
+- Google OAuth/Calendar ;
+- accès CLI réservé à la CI.
 
-## Organisation du dépôt
+## Organisation
 
 ```text
-apps/web/          Application Next.js App Router
-  src/app/         Routes, layouts et transport Next.js
-  src/components/  Primitives UI partagées
-  src/features/    Présentation et orchestration par domaine
-  src/domain/      Invariants et règles métier pures
-  src/services/    Cas d’usage applicatifs
-  src/repositories/Contrats et futurs adaptateurs de persistance
-  src/lib/         Primitives techniques transversales
-  src/validations/ Schémas runtime aux frontières de confiance
-  src/types/       Types transversaux stables
-  src/config/      Configuration publique et serveur validée
-packages/          Futurs packages partagés ayant plusieurs consommateurs
-trigger/           Frontière des futures tâches Trigger.dev
-supabase/          Futures migrations, configuration locale et tests RLS
-tests/             Futurs tests d’intégration et end-to-end transversaux
-docs/              Analyse, architecture et plans du projet
-.codex/            Ressources locales d’assistance au développement
+apps/web/          application Next.js App Router
+  src/app/         routes, layouts et transports
+  src/components/  design system et composants partagés
+  src/features/    présentation et orchestration par domaine
+  src/domain/      invariants métier purs
+  src/services/    cas d’usage
+  src/repositories/contrats et adaptateurs Supabase
+  src/lib/         primitives techniques
+  src/validations/ schémas Zod
+  src/types/       types générés et transversaux
+  src/config/      configuration validée
+trigger/           tâches durables et contrôles tenant
+supabase/          migrations, seed et tests pgTAP
+tests/e2e/         Playwright et axe
+docs/              architecture, sécurité et runbooks
+.codex/skills/     skills IA versionnés
+.codex/agents/     catalogue des agents
 ```
 
-La structure utilise les workspaces npm natifs. Elle prépare les frontières demandées sans
-introduire Turborepo, des packages artificiels ou une infrastructure prématurée.
-Les règles détaillées de dépendance et de séparation sont définies dans
-`docs/CODE_ARCHITECTURE.md`.
+## Services et sécurité
 
-## Fonctionnement et services
+Le navigateur ne choisit jamais son tenant de confiance. Le serveur vérifie la
+session, le membership agence, l’affectation client, la permission et le tenant
+réel de chaque ressource. Les tâches Trigger.dev refont ces contrôles et
+utilisent un ledger d’idempotence durable.
 
-L’application actuelle sert uniquement une page de contrôle du socle technique. La
-validation d’environnement sépare les variables publiques des secrets serveur. Les
-modules métier devront ensuite respecter l’isolation :
+Les traitements fournisseurs non configurés refusent explicitement
+l’exécution. Aucun email réel ne doit être envoyé pendant les tests locaux.
 
-```text
-Plateforme → Agence → Client → Ressource métier
-```
+## Documentation essentielle
 
-Supabase et le projet Trigger.dev Development disposent maintenant de leur fondation.
-Les tâches Trigger.dev et les fonctionnalités métier ne sont pas encore implémentées.
-Les fournisseurs IA, d’enrichissement, de vérification, d’envoi, Google OAuth/Calendar
-et l’observabilité devront être activés selon les phases documentées dans
-`docs/IMPLEMENTATION_PLAN.md`.
+- `AGENTS.md` et `CODEX.md` : règles permanentes ;
+- `docs/CODE_ARCHITECTURE.md` : frontières du code ;
+- `docs/MULTITENANCY.md` et `docs/RBAC.md` : isolation et permissions ;
+- `docs/TRIGGER_TASKS.md` : orchestration durable ;
+- `docs/SECURITY_MODEL.md` et `docs/THREAT_MODEL.md` : sécurité ;
+- `docs/TEST_STRATEGY.md` : stratégie de preuve ;
+- `docs/DEPLOYMENT.md` et `docs/PRODUCTION_CHECKLIST.md` : production ;
+- `docs/MVP_AUDIT.md` : état réel et blocages.
 
-## Règles de contribution
-
-Lire `AGENTS.md`, `CODEX.md` et les documents d’architecture avant toute modification.
-Une contribution doit rester limitée à son périmètre, préserver TypeScript strict,
-valider les entrées externes et exécuter au minimum les vérifications pertinentes :
+## Vérification avant contribution
 
 ```powershell
 npm run format:check
 npm run lint
 npm run typecheck
 npm test
+npm run test:e2e
+npm run db:test
 npm run build
 ```
+
+Une commande non exécutée ou échouée doit être signalée. Une migration distante,
+un déploiement ou un envoi réel exige une instruction explicite.

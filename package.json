@@ -12,15 +12,19 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=@lead-generation/web",
-    "build": "npm run build --workspace=@lead-generation/web",
-    "start": "npm run start --workspace=@lead-generation/web",
+    "dev": "node scripts/run-web.mjs dev",
+    "build": "node scripts/run-web.mjs build",
+    "start": "node scripts/run-web.mjs start",
     "lint": "npm run lint --workspace=@lead-generation/web",
     "lint:fix": "npm run lint:fix --workspace=@lead-generation/web",
-    "typecheck": "npm run typecheck --workspace=@lead-generation/web",
+    "typecheck": "npm run typecheck:web && npm run typecheck:trigger",
+    "typecheck:web": "npm run typecheck --workspace=@lead-generation/web",
+    "typecheck:trigger": "tsc --project trigger/tsconfig.json --noEmit",
     "test": "npm run test --workspace=@lead-generation/web",
+    "test:e2e": "npm run test:e2e --workspace=@lead-generation/web",
     "test:watch": "npm run test:watch --workspace=@lead-generation/web",
-    "supabase:start": "supabase start",
+    "supabase:start": "supabase start --exclude edge-runtime,imgproxy,logflare,realtime,storage-api,vector",
+    "supabase:status": "supabase status",
     "supabase:stop": "supabase stop",
     "db:reset": "supabase db reset --local",
     "db:test": "supabase test db --local supabase/tests/database",
@@ -35,6 +39,7 @@
     "trigger.dev": "^4.5.7"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.110.7",
     "@trigger.dev/sdk": "^4.5.7"
   }
 }

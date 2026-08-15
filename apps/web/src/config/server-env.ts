@@ -2,15 +2,19 @@ import "server-only";
 
 import { z } from "zod";
 
-const optionalSecret = z.string().min(1).optional();
 const emptyAsUndefined = (value: unknown) => (value === "" ? undefined : value);
+const optionalSecret = z.preprocess(
+  emptyAsUndefined,
+  z.string().min(1).optional(),
+);
+const optionalUrl = z.preprocess(emptyAsUndefined, z.url().optional());
 
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
-  APP_URL: z.url().optional(),
+  APP_URL: optionalUrl,
   SUPABASE_SERVICE_ROLE_KEY: optionalSecret,
   TRIGGER_SECRET_KEY: optionalSecret,
-  SENTRY_DSN: z.url().optional(),
+  SENTRY_DSN: optionalUrl,
   LLM_PROVIDER: z.preprocess(
     emptyAsUndefined,
     z.literal("groq").default("groq"),
@@ -24,8 +28,14 @@ const serverEnvSchema = z.object({
   FIRECRAWL_API_KEY: optionalSecret,
   ZEROBOUNCE_API_KEY: optionalSecret,
   RESEND_API_KEY: optionalSecret,
+  RESEND_FROM_EMAIL: z.preprocess(emptyAsUndefined, z.email().optional()),
   GOOGLE_CLIENT_ID: optionalSecret,
   GOOGLE_CLIENT_SECRET: optionalSecret,
+  INBOUND_WEBHOOK_SECRET: optionalSecret,
+  INBOUND_WEBHOOK_PROVIDER: z.preprocess(
+    emptyAsUndefined,
+    z.string().trim().min(2).max(80).default("generic-email"),
+  ),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -43,8 +53,11 @@ export const serverEnv: ServerEnv = serverEnvSchema.parse({
   FIRECRAWL_API_KEY: process.env.FIRECRAWL_API_KEY,
   ZEROBOUNCE_API_KEY: process.env.ZEROBOUNCE_API_KEY,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
+  RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  INBOUND_WEBHOOK_SECRET: process.env.INBOUND_WEBHOOK_SECRET,
+  INBOUND_WEBHOOK_PROVIDER: process.env.INBOUND_WEBHOOK_PROVIDER,
 });
 
 export function getApplicationUrl(): string {

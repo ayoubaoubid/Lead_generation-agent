@@ -27,3 +27,20 @@ export interface Logger {
   warn(message: string, context: LogContext): void;
   error(message: string, error: LogError, context: LogContext): void;
 }
+
+const sensitiveLogKeyPattern =
+  /(authorization|cookie|password|secret|token|api.?key|email|body|content|payload)/i;
+
+export function sanitizeLogContext(context: LogContext): LogContext {
+  if (!context.attributes) return context;
+
+  return {
+    ...context,
+    attributes: Object.fromEntries(
+      Object.entries(context.attributes).map(([key, value]) => [
+        key,
+        sensitiveLogKeyPattern.test(key) ? "[REDACTED]" : value,
+      ]),
+    ),
+  };
+}

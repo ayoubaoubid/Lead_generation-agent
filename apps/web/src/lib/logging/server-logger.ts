@@ -1,6 +1,11 @@
 import "server-only";
 
-import type { LogContext, LogError, Logger } from "@/lib/logging/logger";
+import {
+  sanitizeLogContext,
+  type LogContext,
+  type LogError,
+  type Logger,
+} from "@/lib/logging/logger";
 
 function serialize(
   level: string,
@@ -12,7 +17,7 @@ function serialize(
     timestamp: new Date().toISOString(),
     level,
     message,
-    ...context,
+    ...sanitizeLogContext(context),
     ...(error ? { error } : {}),
   });
 }

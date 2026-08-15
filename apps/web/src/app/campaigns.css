@@ -1,0 +1,239 @@
+.campaign-page {
+  display: grid;
+  gap: 28px;
+}
+
+.campaign-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.5fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.campaign-panel {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--surface-raised) 96%, transparent);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+}
+
+.campaign-panel--form {
+  position: sticky;
+  top: 96px;
+  display: grid;
+  gap: 22px;
+}
+
+.campaign-panel h2,
+.campaign-card h3 {
+  margin: 4px 0 0;
+  color: var(--ink);
+}
+
+.campaign-panel p,
+.campaign-card p {
+  color: var(--ink-secondary);
+}
+
+.campaign-eyebrow {
+  margin: 0;
+  color: var(--brand) !important;
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.campaign-form,
+.campaign-list {
+  display: grid;
+  gap: 14px;
+}
+
+.campaign-form-grid,
+.campaign-card-heading,
+.campaign-card-meta,
+.campaign-list-header,
+.campaign-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.campaign-form-grid > * {
+  flex: 1;
+}
+
+.campaign-list-header {
+  margin-bottom: 18px;
+}
+
+.campaign-list-header > span,
+.campaign-card-heading > span,
+.campaign-card-meta {
+  color: var(--ink-tertiary);
+  font-size: 0.78rem;
+}
+
+.campaign-card {
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  border-radius: 16px;
+  background: var(--surface-raised);
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.campaign-card:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--brand) 28%, var(--line));
+  box-shadow: 0 14px 32px rgb(15 23 42 / 7%);
+}
+
+.campaign-status {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--surface-inset);
+  color: var(--ink-secondary);
+  font-size: 0.7rem;
+  font-weight: 720;
+}
+
+.campaign-status--approved,
+.campaign-status--running {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.campaign-status--ready_for_review,
+.campaign-status--scheduled {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.campaign-empty {
+  padding: 42px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.campaign-feedback {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-inset);
+}
+
+.campaign-feedback--error {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.campaign-feedback--success {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.campaign-messages {
+  display: grid;
+  gap: 18px;
+}
+
+.message-variant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 16px;
+}
+
+.message-variant-card {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--brand-soft) 32%, transparent),
+      transparent 42%
+    ),
+    var(--surface-raised);
+  box-shadow: var(--shadow-xs);
+}
+
+.message-variant-card header,
+.message-variant-card footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.message-variant-card h3 {
+  margin: 10px 0 0;
+}
+
+.message-variant-card code,
+.message-variant-card footer {
+  color: var(--ink-tertiary);
+  font-size: 0.76rem;
+}
+
+.message-subject {
+  margin: 0;
+  color: var(--ink) !important;
+  font-weight: 720;
+}
+
+.message-body {
+  margin: 0;
+  color: var(--ink-secondary) !important;
+  line-height: 1.68;
+  white-space: pre-wrap;
+}
+
+.message-actions-stack,
+.message-edit-form {
+  display: grid;
+  gap: 10px;
+}
+
+.campaign-status--human_review_pending {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+
+.campaign-status--rejected {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+@media (max-width: 980px) {
+  .campaign-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .campaign-panel--form {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .campaign-panel {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .campaign-form-grid,
+  .campaign-card-heading,
+  .campaign-card-meta,
+  .campaign-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

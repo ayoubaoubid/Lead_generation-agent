@@ -33,7 +33,7 @@ Les clés étrangères composites garantissent qu’un client, un rôle client o
 
 ## 3. Identité et profils
 
-`profiles.id` est une clé étrangère un-à-un vers `auth.users.id`. Un trigger après création Auth ajoute automatiquement le profil. Le champ `raw_user_meta_data.full_name` est accepté uniquement comme texte d’affichage tronqué et validé ; aucune metadata utilisateur ne participe à l’autorisation.
+`profiles.id` est une clé étrangère un-à-un vers `auth.users.id`. Un trigger après création Auth ajoute automatiquement le profil. Une migration idempotente provisionne aussi les profils manquants lorsqu’un projet Supabase contient déjà des utilisateurs Auth avant l’installation du schéma applicatif. Le champ `raw_user_meta_data.full_name` est accepté uniquement comme texte d’affichage tronqué et validé ; aucune metadata utilisateur ne participe à l’autorisation.
 
 `profiles.id` est lié à l’utilisateur Auth avec suppression en cascade, mais un profil ayant encore des memberships conservés ne peut pas être supprimé grâce aux clés étrangères `restrict`. L’offboarding normal utilise donc les statuts `suspended` puis `removed`, sans effacer l’historique. La stratégie définitive d’anonymisation et de suppression dure reste une décision conformité. Les références historiques `created_by` utilisent `set null` ; la création normale doit néanmoins toujours fournir l’acteur et l’audit append-only conserve le contexte autorisé nécessaire.
 
@@ -90,17 +90,26 @@ Prérequis : Node.js compatible avec le dépôt, Docker Desktop ou un runtime Do
 
 ```powershell
 npm run supabase:start
-npm run db:reset
+npm run supabase:status
 npm run db:test
 npm run db:types
 ```
 
-- `supabase:start` démarre la pile locale uniquement ;
-- `db:reset` reconstruit la base locale depuis les migrations puis exécute `seed.sql` ;
+- `supabase:start` démarre la pile locale Auth/API/Studio nécessaire au MVP ;
+- `supabase:status` affiche les URLs locales sans modifier les données ;
+- `supabase:stop` arrête les conteneurs et conserve les volumes Docker ;
+- `db:reset` est destructif : il reconstruit la base locale depuis les migrations puis exécute `seed.sql` ;
 - `db:test` exécute les tests pgTAP locaux ;
 - `db:types` régénère `apps/web/src/types/database.generated.ts` depuis le schéma local.
 
 Pour éviter une action distante accidentelle, employer systématiquement `--local` pour les commandes destructives ou de test. Ne jamais lancer `db reset --linked`, `db push` ou une migration depuis le Dashboard sans revue, sauvegarde et autorisation explicite.
+
+Les données de développement persistent après un arrêt normal du PC dans le
+volume `supabase_db_lead_generation_sales`. Ne jamais employer
+`supabase stop --no-backup`, supprimer ce volume ou lancer
+`docker system prune --volumes`. Avant d’éteindre la machine, utiliser
+`npm run supabase:stop`; après redémarrage de Docker Desktop, utiliser
+`npm run supabase:start`.
 
 ## 8. Tests de sécurité
 

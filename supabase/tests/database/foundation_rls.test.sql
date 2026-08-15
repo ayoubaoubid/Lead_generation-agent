@@ -50,6 +50,16 @@ insert into public.role_permissions (role_id, permission_id, created_by)
 select 'bb000000-0000-0000-0000-000000000001', permission.id, '20000000-0000-0000-0000-000000000001'
 from public.permissions as permission;
 
+insert into public.role_permissions (role_id, permission_id, created_by)
+select role.id, permission.id, role.created_by
+from public.roles as role
+cross join public.permissions as permission
+where role.id in (
+    'ac000000-0000-0000-0000-000000000001',
+    'bc000000-0000-0000-0000-000000000001'
+  )
+  and permission.key = 'client.read';
+
 insert into public.agency_members (agency_id, profile_id, role_id, status, created_by)
 values
   ('a0000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'aa000000-0000-0000-0000-000000000001', 'active', '10000000-0000-0000-0000-000000000001'),

@@ -1,6 +1,6 @@
 begin;
 
-select plan(18);
+select plan(14);
 
 insert into auth.users (
   id,
@@ -17,13 +17,8 @@ insert into auth.users (
 )
 values
   ('71000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'rbac-owner@example.test', '', now(), '{}', '{"full_name":"RBAC Owner"}', now(), now()),
-  ('71000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'rbac-admin@example.test', '', now(), '{}', '{"full_name":"RBAC Admin"}', now(), now()),
-  ('71000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'rbac-reviewer@example.test', '', now(), '{}', '{"full_name":"RBAC Reviewer"}', now(), now()),
-  ('71000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'rbac-analyst@example.test', '', now(), '{}', '{"full_name":"RBAC Analyst"}', now(), now()),
-  ('71000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'client-admin@example.test', '', now(), '{}', '{"full_name":"Client Admin"}', now(), now()),
-  ('71000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'client-reviewer@example.test', '', now(), '{}', '{"full_name":"Client Reviewer"}', now(), now()),
-  ('71000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'client-viewer@example.test', '', now(), '{}', '{"full_name":"Client Viewer"}', now(), now()),
-  ('71000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'fake-owner@example.test', '', now(), '{}', '{"full_name":"Fake Owner"}', now(), now());
+  ('71000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'rbac-recruiter@example.test', '', now(), '{}', '{"full_name":"RBAC Recruiter"}', now(), now()),
+  ('71000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'fake-owner@example.test', '', now(), '{}', '{"full_name":"Fake Owner"}', now(), now());
 
 create temporary table rbac_test_context (
   agency_id uuid not null,
@@ -45,6 +40,12 @@ set client_id = public.create_client(
   'rbac-client'
 );
 
+select public.invite_or_assign_recruiter(
+  (select agency_id from rbac_test_context),
+  '71000000-0000-0000-0000-000000000002',
+  array[(select client_id from rbac_test_context)]
+);
+
 reset role;
 
 insert into public.roles (
@@ -60,7 +61,7 @@ select
   'agency',
   'Agency Owner',
   'fake-owner',
-  'A role name that must not grant any capability.',
+  'A presentation label that grants no capability.',
   '71000000-0000-0000-0000-000000000001'
 from rbac_test_context;
 
@@ -73,54 +74,15 @@ insert into public.agency_members (
 )
 select
   context.agency_id,
-  assignment.profile_id,
+  '71000000-0000-0000-0000-000000000003',
   role.id,
   'active',
   '71000000-0000-0000-0000-000000000001'
 from rbac_test_context as context
-join (
-  values
-    ('71000000-0000-0000-0000-000000000002'::uuid, 'admin'),
-    ('71000000-0000-0000-0000-000000000003'::uuid, 'reviewer'),
-    ('71000000-0000-0000-0000-000000000004'::uuid, 'analyst'),
-    ('71000000-0000-0000-0000-000000000005'::uuid, 'analyst'),
-    ('71000000-0000-0000-0000-000000000006'::uuid, 'analyst'),
-    ('71000000-0000-0000-0000-000000000007'::uuid, 'analyst'),
-    ('71000000-0000-0000-0000-000000000008'::uuid, 'fake-owner')
-) as assignment(profile_id, role_slug)
-  on true
 join public.roles as role
   on role.agency_id = context.agency_id
  and role.client_id is null
- and role.slug = assignment.role_slug;
-
-insert into public.client_members (
-  agency_id,
-  client_id,
-  profile_id,
-  role_id,
-  status,
-  created_by
-)
-select
-  context.agency_id,
-  context.client_id,
-  assignment.profile_id,
-  role.id,
-  'active',
-  '71000000-0000-0000-0000-000000000001'
-from rbac_test_context as context
-join (
-  values
-    ('71000000-0000-0000-0000-000000000005'::uuid, 'admin'),
-    ('71000000-0000-0000-0000-000000000006'::uuid, 'reviewer'),
-    ('71000000-0000-0000-0000-000000000007'::uuid, 'viewer')
-) as assignment(profile_id, role_slug)
-  on true
-join public.roles as role
-  on role.agency_id = context.agency_id
- and role.client_id = context.client_id
- and role.slug = assignment.role_slug;
+ and role.slug = 'fake-owner';
 
 select is(
   (
@@ -128,9 +90,10 @@ select is(
     where agency_id = (select agency_id from rbac_test_context)
       and scope = 'agency'
       and is_system
+      and archived_at is null
   ),
-  8::bigint,
-  'agency provisioning creates the eight requested system roles'
+  2::bigint,
+  'agency provisioning exposes only Agency Owner and Recruiter'
 );
 
 select is(
@@ -140,9 +103,10 @@ select is(
       and client_id = (select client_id from rbac_test_context)
       and scope = 'client'
       and is_system
+      and archived_at is null
   ),
-  3::bigint,
-  'client provisioning creates the three requested system roles'
+  1::bigint,
+  'client provisioning exposes only Recruiter'
 );
 
 set local role authenticated;
@@ -150,34 +114,22 @@ select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000001', true);
 
 select ok(private.has_permission((select agency_id from rbac_test_context), null, 'agency.transfer_ownership'), 'Agency Owner can transfer ownership');
-select ok(private.has_permission((select agency_id from rbac_test_context), null, 'campaign.launch'), 'Agency Owner can launch campaigns');
+select ok(private.has_permission((select agency_id from rbac_test_context), null, 'client.create'), 'Agency Owner can create clients');
+select ok(private.has_permission((select agency_id from rbac_test_context), null, 'member.invite'), 'Agency Owner can invite Recruiters');
 
 select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000002', true);
-select ok(private.has_permission((select agency_id from rbac_test_context), null, 'campaign.launch'), 'Agency Admin can launch campaigns');
-select is(private.has_permission((select agency_id from rbac_test_context), null, 'agency.transfer_ownership'), false, 'Agency Admin cannot transfer ownership');
+select public.accept_pending_recruiter_invitations();
+
+select ok(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'lead.write'), 'assigned Recruiter can operate lead data');
+select ok(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'campaign.launch'), 'assigned Recruiter can launch an approved campaign');
+select is(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'client.manage'), false, 'Recruiter cannot administer the client');
+select is(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'member.invite'), false, 'Recruiter cannot invite members');
+select is(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'settings.manage'), false, 'Recruiter cannot change protected client settings');
+select is(private.has_permission((select agency_id from rbac_test_context), null, 'client.read'), false, 'Recruiter has no agency-wide client access');
+select is(private.has_permission((select agency_id from rbac_test_context), null, 'agency.transfer_ownership'), false, 'Recruiter cannot transfer agency ownership');
 
 select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000003', true);
-select ok(private.has_permission((select agency_id from rbac_test_context), null, 'campaign.approve'), 'Reviewer can approve campaigns');
-select is(private.has_permission((select agency_id from rbac_test_context), null, 'campaign.launch'), false, 'Reviewer cannot launch campaigns');
-
-select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000004', true);
-select ok(private.has_permission((select agency_id from rbac_test_context), null, 'analytics.read'), 'Analyst can read analytics');
-select is(private.has_permission((select agency_id from rbac_test_context), null, 'lead.write'), false, 'Analyst cannot modify leads');
-
-select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000005', true);
-select ok(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'settings.manage'), 'Client Admin can manage client settings');
-select is(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'campaign.launch'), false, 'Client Admin cannot launch campaigns');
-
-select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000006', true);
-select ok(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'campaign.approve'), 'Client Reviewer can approve campaigns');
-select is(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'campaign.launch'), false, 'Client Reviewer cannot launch campaigns');
-
-select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000007', true);
-select ok(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'analytics.read'), 'Client Viewer can read analytics');
-select is(private.has_permission((select agency_id from rbac_test_context), (select client_id from rbac_test_context), 'message.approve'), false, 'Client Viewer cannot approve messages');
-
-select set_config('request.jwt.claim.sub', '71000000-0000-0000-0000-000000000008', true);
-select is(private.has_permission((select agency_id from rbac_test_context), null, 'campaign.launch'), false, 'a role named Agency Owner receives no authority without permission assignments');
+select is(private.has_permission((select agency_id from rbac_test_context), null, 'campaign.launch'), false, 'a role merely named Agency Owner grants no authority');
 
 reset role;
 
@@ -189,7 +141,7 @@ select throws_ok(
     cross join public.permissions as permission
     where role.agency_id = (select agency_id from rbac_test_context)
       and role.client_id = (select client_id from rbac_test_context)
-      and role.slug = 'viewer'
+      and role.slug = 'recruiter'
       and permission.key = 'agency.transfer_ownership'
   $$,
   '23514',

@@ -1,6 +1,6 @@
 begin;
 
-select plan(12);
+select plan(14);
 
 insert into auth.users (
   id,
@@ -25,7 +25,8 @@ select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config('request.jwt.claim.sub', '61000000-0000-0000-0000-000000000001', true);
 
 create temporary table tenant_test_context (
-  agency_id uuid not null
+  agency_id uuid not null,
+  client_id uuid
 ) on commit drop;
 
 insert into tenant_test_context (agency_id)
@@ -60,9 +61,16 @@ select lives_ok(
   'an active member can select their agency'
 );
 
-select lives_ok(
-  $$ select public.create_client(agency_id, 'Workflow Client', 'workflow-client') from tenant_test_context $$,
-  'an authorized agency member can create a client'
+update tenant_test_context
+set client_id = public.create_client(
+  agency_id,
+  'Workflow Client',
+  'workflow-client'
+);
+
+select ok(
+  (select client_id is not null from tenant_test_context),
+  'an authorized Agency Owner can create a client'
 );
 
 select results_eq(
@@ -73,23 +81,20 @@ select results_eq(
 
 select lives_ok(
   $$
-    select public.assign_agency_member(
+    select public.invite_or_assign_recruiter(
       context.agency_id,
       '61000000-0000-0000-0000-000000000002',
-      membership.role_id
+      array[context.client_id]
     )
     from tenant_test_context as context
-    join public.agency_members as membership
-      on membership.agency_id = context.agency_id
-     and membership.profile_id = '61000000-0000-0000-0000-000000000001'
   $$,
-  'a member manager can create an agency invitation'
+  'an Agency Owner can invite a Recruiter with an explicit client assignment'
 );
 
 select results_eq(
-  $$ select action from public.audit_logs where action = 'agency_membership.invited' $$,
-  array['agency_membership.invited']::text[],
-  'a sensitive membership invitation is audited'
+  $$ select action from public.audit_logs where action = 'recruiter.invited' $$,
+  array['recruiter.invited']::text[],
+  'the Recruiter invitation is audited'
 );
 
 select set_config('request.jwt.claim.sub', '61000000-0000-0000-0000-000000000002', true);
@@ -100,18 +105,30 @@ select is_empty(
 );
 
 select lives_ok(
-  $$
-    select public.accept_agency_membership(id)
-    from public.agency_members
-    where profile_id = '61000000-0000-0000-0000-000000000002'
-  $$,
-  'an invited user can accept only their own agency membership'
+  $$ select public.accept_pending_recruiter_invitations() $$,
+  'an invited Recruiter can activate only their own pending memberships'
 );
 
 select results_eq(
   $$ select slug from public.agencies $$,
   array['workflow-agency']::text[],
-  'an accepted member can access the agency'
+  'an accepted Recruiter can access the agency'
+);
+
+select results_eq(
+  $$ select slug from public.clients $$,
+  array['workflow-client']::text[],
+  'an accepted Recruiter can access the explicitly assigned client'
+);
+
+select is(
+  private.has_permission(
+    (select agency_id from tenant_test_context),
+    null,
+    'client.read'
+  ),
+  false,
+  'a Recruiter receives no agency-wide client permission'
 );
 
 select * from finish();

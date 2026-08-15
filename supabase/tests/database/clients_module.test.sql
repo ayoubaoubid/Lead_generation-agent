@@ -92,10 +92,10 @@ select
   'active',
   '76000000-0000-0000-0000-000000000001'
 from clients_test_context as context
-join public.roles as role
+ join public.roles as role
   on role.agency_id = context.agency_a
  and role.client_id is null
- and role.slug = 'analyst';
+ and role.slug = 'recruiter';
 
 insert into public.client_members (
   agency_id,
@@ -113,10 +113,10 @@ select
   'active',
   '76000000-0000-0000-0000-000000000001'
 from clients_test_context as context
-join public.roles as role
+ join public.roles as role
   on role.agency_id = context.agency_a
  and role.client_id = context.client_a
- and role.slug = 'viewer';
+ and role.slug = 'recruiter';
 
 select ok(
   exists (
@@ -228,7 +228,7 @@ select is(
     where id = (select client_a from clients_test_context)
   ),
   1::bigint,
-  'an assigned Client Viewer can consult its client'
+  'an assigned Recruiter can consult its client'
 );
 
 select is(
@@ -238,7 +238,7 @@ select is(
     'client.archive'
   ),
   false,
-  'Client Viewer cannot archive a client'
+  'Recruiter cannot archive a client'
 );
 
 select throws_ok(
@@ -249,7 +249,7 @@ select throws_ok(
   ),
   '42501',
   'client archive permission required',
-  'Client Viewer archive attempt is rejected'
+  'Recruiter archive attempt is rejected'
 );
 
 select set_config('request.jwt.claim.sub', '76000000-0000-0000-0000-000000000001', true);

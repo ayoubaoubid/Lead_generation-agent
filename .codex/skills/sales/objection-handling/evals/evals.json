@@ -1,0 +1,25 @@
+{
+  "skill_name": "objection-handling",
+  "evals": [
+    {
+      "name": "price_without_roi_proof",
+      "input": {
+        "objection": "C'est trop cher.",
+        "confirmedEvidence": []
+      },
+      "expect": {
+        "missingEvidence": ["roi"],
+        "requiresHumanReview": true
+      }
+    },
+    {
+      "name": "unsubscribe_is_not_an_objection",
+      "input": {
+        "objection": "Ne me contactez plus."
+      },
+      "expect": {
+        "refuse": true
+      }
+    }
+  ]
+}

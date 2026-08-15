@@ -9,6 +9,10 @@ export const commercialSkillIds = [
   "spin-selling",
   "storybrand",
   "made-to-stick",
+  "cold-email-personalization",
+  "message-compliance-review",
+  "reply-classification",
+  "objection-handling",
 ] as const;
 
 export type CommercialSkillId = (typeof commercialSkillIds)[number];
@@ -24,6 +28,10 @@ export const aiAgentIds = [
   "message-quality-agent",
   "sales-assistant-agent",
   "analytics-agent",
+  "lead-research-agent",
+  "qualification-agent",
+  "reply-agent",
+  "compliance-agent",
 ] as const;
 
 export type AiAgentId = (typeof aiAgentIds)[number];

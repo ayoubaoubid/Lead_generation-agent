@@ -1,5 +1,11 @@
 # Infrastructure des skills et agents IA
 
+> Le catalogue actif est désormais `.codex/agents/catalog.v2.json`. Il ajoute
+> les agents opérationnels et leurs capacités autorisées. Le catalogue v1 reste
+> conservé comme historique. Le workflow complet et la séparation entre agents,
+> services déterministes et validations humaines sont décrits dans
+> `docs/AGENT_WORKFLOW_ARCHITECTURE.md`.
+
 ## 1. Périmètre de ce lot
 
 Ce lot crée les contrats et garde-fous nécessaires aux capacités IA. Le module
@@ -16,7 +22,8 @@ permissions ou d’autre effet externe.
 ```text
 .codex/
 ├── agents/
-│   └── catalog.v1.json
+│   ├── catalog.v1.json
+│   └── catalog.v2.json
 └── skills/
     ├── strategy/
     ├── sales/
@@ -90,8 +97,8 @@ dans `missingEvidence`; elle ne doit pas être remplacée par une invention.
 
 ## 6. Agents et autorisation
 
-Le catalogue v1 définit dix agents préparés et leur allowlist de skills. Deux contrôles
-restent distincts :
+Le catalogue v2 définit les agents préparés, leur allowlist de skills et leur
+allowlist de capacités opérationnelles. Deux contrôles restent distincts :
 
 1. l’agent est conçu pour utiliser le skill ;
 2. l’acteur possède l’autorisation serveur nécessaire dans le tenant actif.

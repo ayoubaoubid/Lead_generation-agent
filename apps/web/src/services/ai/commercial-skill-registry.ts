@@ -49,6 +49,10 @@ const categoryBySkill: Readonly<
   "spin-selling": "sales",
   storybrand: "sales",
   "made-to-stick": "quality",
+  "cold-email-personalization": "sales",
+  "message-compliance-review": "quality",
+  "reply-classification": "sales",
+  "objection-handling": "sales",
 };
 
 const reasoningSkills = new Set<CommercialSkillId>([
@@ -90,6 +94,10 @@ export const commercialSkillRegistry = {
   "spin-selling": defineSkill("spin-selling"),
   storybrand: defineSkill("storybrand"),
   "made-to-stick": defineSkill("made-to-stick"),
+  "cold-email-personalization": defineSkill("cold-email-personalization"),
+  "message-compliance-review": defineSkill("message-compliance-review"),
+  "reply-classification": defineSkill("reply-classification"),
+  "objection-handling": defineSkill("objection-handling"),
 } satisfies Record<CommercialSkillId, SkillDefinition>;
 
 export function getCommercialSkillDefinition(

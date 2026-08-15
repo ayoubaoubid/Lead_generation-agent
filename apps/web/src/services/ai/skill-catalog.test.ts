@@ -54,29 +54,33 @@ describe("versioned skill catalog files", () => {
       expect(prompt).toContain("system prompt v1");
       expect(prompt.toLowerCase()).toContain("structuré");
       expect(evals.skill_name).toBe(skillId);
-      expect(evals.evals).toHaveLength(2);
+      expect(evals.evals.length).toBeGreaterThanOrEqual(2);
     }
   });
 
   it("keeps the file-based agent allowlists aligned with TypeScript", () => {
     const catalog = JSON.parse(
-      repositoryFile(".codex/agents/catalog.v1.json"),
+      repositoryFile(".codex/agents/catalog.v2.json"),
     ) as {
       version: string;
       agents: readonly {
         id: (typeof aiAgentIds)[number];
         version: string;
         allowedSkills: readonly string[];
+        allowedCapabilities: readonly string[];
       }[];
     };
 
-    expect(catalog.version).toBe("1.0.0");
+    expect(catalog.version).toBe("2.0.0");
     expect(catalog.agents.map((agent) => agent.id)).toEqual(aiAgentIds);
 
     for (const agent of catalog.agents) {
       expect(agent.version).toBe(aiAgentRegistry[agent.id].version);
       expect(agent.allowedSkills).toEqual(
         aiAgentRegistry[agent.id].allowedSkills,
+      );
+      expect(agent.allowedCapabilities).toEqual(
+        aiAgentRegistry[agent.id].allowedCapabilities,
       );
     }
   });

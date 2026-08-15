@@ -11,6 +11,10 @@ const longText = z.string().trim().min(1).max(5000);
 const shortTextList = z.array(shortText).max(50);
 const confidence = z.number().min(0).max(1);
 
+function countWords(value: string): number {
+  return value.trim().split(/\s+/u).filter(Boolean).length;
+}
+
 export const evidenceReferenceSchema = z.object({
   referenceId: z.string().trim().min(1).max(120),
   label: z.string().trim().min(1).max(240),
@@ -51,6 +55,72 @@ const experimentSchema = z.object({
   possibleDecision: z.enum(["continue", "iterate", "pivot", "stop"]),
   requiredInstrumentation: shortTextList,
 });
+
+const usableMessageStatementSchema = groundedStatementSchema.superRefine(
+  (statement, context) => {
+    if (
+      !["confirmed_fact", "extracted_fact"].includes(
+        statement.classification,
+      ) ||
+      statement.sourceReferenceIds.length === 0
+    ) {
+      context.addIssue({
+        code: "custom",
+        message:
+          "Message generation accepts only confirmed or extracted sourced facts.",
+      });
+    }
+  },
+);
+
+const coldEmailPersonalizationOutputSchema = z
+  .object({
+    subject: z.string().trim().min(1).max(160),
+    body: longText,
+    mainIdea: longText,
+    callToAction: shortText,
+    wordCount: z.number().int().min(50).max(120),
+    usedStatements: z.array(usableMessageStatementSchema).max(20),
+    missingEvidence: shortTextList,
+    ...baseOutputShape,
+  })
+  .superRefine((output, context) => {
+    if (countWords(output.body) !== output.wordCount) {
+      context.addIssue({
+        code: "custom",
+        path: ["wordCount"],
+        message: "The declared word count must match the generated body.",
+      });
+    }
+  });
+
+const messageComplianceReviewOutputSchema = z.object({
+  decision: z.enum(["approve", "revise", "reject"]),
+  blockingReasons: shortTextList,
+  warnings: shortTextList,
+  missingRequirements: shortTextList,
+  policyVersion: shortText,
+  requiresHumanApproval: z.literal(true),
+  ...baseOutputShape,
+});
+
+const replyCategories = [
+  "positive_interest",
+  "information_request",
+  "meeting_requested",
+  "later",
+  "wrong_contact",
+  "referral",
+  "not_interested",
+  "objection",
+  "unsubscribe",
+  "out_of_office",
+  "automatic_reply",
+  "existing_customer",
+  "competitor",
+  "spam",
+  "ambiguous",
+] as const;
 
 export const commercialSkillSchemas = {
   diagnose: {
@@ -263,6 +333,84 @@ export const commercialSkillSchemas = {
       }),
       detectedIssues: shortTextList,
       revisionInstructions: shortTextList,
+      ...baseOutputShape,
+    }),
+  },
+  "cold-email-personalization": {
+    input: baseInputSchema.extend({
+      validatedPositioning: z.literal(true),
+      validatedOffer: z.literal(true),
+      language: z.string().trim().min(2).max(20),
+      tone: shortText,
+      mainIdea: longText,
+      callToAction: shortText,
+      prospectStatements: z.array(usableMessageStatementSchema).max(30),
+    }),
+    output: coldEmailPersonalizationOutputSchema,
+  },
+  "message-compliance-review": {
+    input: baseInputSchema.extend({
+      content: longText,
+      recipientCountry: z.string().trim().length(2).nullable(),
+      senderIdentity: longText.nullable(),
+      suppressionStatus: z.enum([
+        "eligible",
+        "unsubscribed",
+        "suppressed",
+        "hard_bounced",
+        "complained",
+      ]),
+      processingJustificationDocumented: z.boolean(),
+      policyVersion: shortText,
+    }),
+    output: messageComplianceReviewOutputSchema,
+  },
+  "reply-classification": {
+    input: baseInputSchema.extend({
+      subject: z.string().trim().max(1000).nullable(),
+      body: z.string().trim().min(1).max(100_000),
+      campaignContext: longText,
+      language: z.string().trim().min(2).max(20),
+      allowedCategories: z.array(z.enum(replyCategories)).min(1),
+    }),
+    output: z.object({
+      category: z.enum(replyCategories),
+      confidence,
+      evidence: shortTextList,
+      explanation: longText,
+      requiresHumanReview: z.boolean(),
+      recommendedTask: z.enum([
+        "review_reply",
+        "respond",
+        "schedule_meeting",
+        "research",
+        "manual_review",
+      ]),
+      missingContext: shortTextList,
+      ...baseOutputShape,
+    }),
+  },
+  "objection-handling": {
+    input: baseInputSchema.extend({
+      objection: longText,
+      objectionType: shortText,
+      validatedOffer: longText,
+      validatedPositioning: longText,
+      confirmedProofs: shortTextList,
+      authorizedGuarantees: shortTextList,
+      language: z.string().trim().min(2).max(20),
+      maxWords: z.number().int().min(20).max(500),
+    }),
+    output: z.object({
+      objectionType: shortText,
+      acknowledgement: longText,
+      responseDraft: longText,
+      groundedClaims: z.array(usableMessageStatementSchema).max(20),
+      questions: shortTextList,
+      missingEvidence: shortTextList,
+      recommendedNextStep: longText,
+      confidence,
+      requiresHumanReview: z.literal(true),
       ...baseOutputShape,
     }),
   },

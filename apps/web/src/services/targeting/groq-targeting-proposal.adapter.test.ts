@@ -28,8 +28,10 @@ const validIcp = {
 describe("GroqTargetingProposalAdapter", () => {
   it("validates the strict response and records token cost metadata", async () => {
     const fetcher = vi.fn(
-      async (_input: RequestInfo | URL, _init?: RequestInit) =>
-        Response.json({
+      async (input: RequestInfo | URL, init?: RequestInit) => {
+        void input;
+        void init;
+        return Response.json({
           choices: [
             {
               message: {
@@ -40,7 +42,8 @@ describe("GroqTargetingProposalAdapter", () => {
             },
           ],
           usage: { prompt_tokens: 100, completion_tokens: 200 },
-        }),
+        });
+      },
     );
     const adapter = new GroqTargetingProposalAdapter("test-key", fetcher);
 
@@ -61,8 +64,10 @@ describe("GroqTargetingProposalAdapter", () => {
 
   it("rejects provider content that does not match the requested type", async () => {
     const fetcher = vi.fn(
-      async (_input: RequestInfo | URL, _init?: RequestInit) =>
-        Response.json({
+      async (input: RequestInfo | URL, init?: RequestInit) => {
+        void input;
+        void init;
+        return Response.json({
           choices: [
             {
               message: {
@@ -73,7 +78,8 @@ describe("GroqTargetingProposalAdapter", () => {
             },
           ],
           usage: { prompt_tokens: 1, completion_tokens: 1 },
-        }),
+        });
+      },
     );
     const adapter = new GroqTargetingProposalAdapter("test-key", fetcher);
     await expect(
